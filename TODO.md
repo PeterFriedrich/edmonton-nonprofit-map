@@ -10,6 +10,25 @@ symptom and re-measure the stated cause before acting on it.
 
 ## Open work
 
-- [ ] <first item — what, why, how you'll know it's done>
+### Build order (`docs/SPEC_map.md`)
+
+- [ ] **Ingest the CRA 2024 files and the Alberta listing.** Downloaders in `src/` for CRA identification, charitable programs and the financial files, and the Alberta Non-Profit Listing, each failing hard when its row count differs from the publisher's. Done when the raw files are in `data/raw/` and `data/DATA.md` records columns, counts and vintage for each.
+- [ ] **Settle the metro-ring place list.** Seven places were measured; find the rest (smaller towns, county hamlets) from the CRA `City` values in Alberta and propose the list to the owner. Done when the list is in one config file and has a `docs/DECISIONS.md` row.
+- [ ] **Build the org table.** Edmonton and ring filter, decoded category and sub-category, `area` and municipality, revenue band and paid staff. Unmatched or missing records are flagged, not dropped. Done when a test asserts the row count against the raw file and that every row has `area`.
+- [ ] **Guard: no director or officer name in any output.** Owed with the first output file; the 2026-11-14 decision row then cites it in place of `[unverifiable]`.
+- [ ] **Embed descriptions, lay them out in 2D, compute nearest neighbours.** Plan first (new module): model, layout method, how orgs with no description appear. Check `df -h /` before installing a model.
+- [ ] **Build the page and the GitHub Pages deploy.** Plan first (CI change). Read `docs/WEB_CACHE_BUSTING.md` before the build step.
+
+### Housekeeping
+
+- [ ] **Answer the fit table** in `docs/CHANGE_PIPELINE.md` (every row is still `not evaluated`), and list this repo's risk paths.
+- [ ] **Replace `README.md`**, which is still the template's own README, with this project's.
+
+### Later
+
+- [ ] **Registry-only tier:** the Alberta listing's active non-profits that are not CRA charities, as name-only entries. Needs name matching between the two sources.
+- [ ] **Funding links between orgs** from the CRA qualified-donees file, as a second way orgs relate.
+- [ ] **Geographic view** as a secondary view.
+- [ ] **Other directories** (211 Alberta, InformAlberta, ECVO): no open licence was found on 2026-11-14. Using one needs the publisher's permission first.
 
 ## Done
