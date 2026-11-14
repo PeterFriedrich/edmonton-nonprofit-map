@@ -1,0 +1,78 @@
+{
+  "alberta_nonprofit_listing": {
+    "dataset_id": "bcc15e72-fe46-4215-8de0-33951662465e",
+    "files": {
+      "listing.xlsx": {
+        "bytes": 3762453,
+        "publisher_last_modified": "2026-11-03T20:50:13.806117",
+        "resource_id": "48fee3cc-6a25-452e-be65-11bd05cc00ab",
+        "rows": 70383,
+        "sha256": "6d844f85f012f1c7161a821fad678411cab93156e36decec1b0f8305aaacab89",
+        "url": "https://open.alberta.ca/dataset/bcc15e72-fe46-4215-8de0-33951662465e/resource/48fee3cc-6a25-452e-be65-11bd05cc00ab/download/non_profit_name_list_for_open_data_portal.xlsx"
+      },
+      "status_definitions.xlsx": {
+        "bytes": 17468,
+        "publisher_last_modified": "2022-10-13T18:51:02.666455",
+        "resource_id": "16edbf28-efb0-40f4-a7c2-76de16c558b0",
+        "rows": 13,
+        "sha256": "4ea6c166852adcf9c7445bc6e4044383e8f02188432dfd4d7d33ceb71f51ca85",
+        "url": "https://open.alberta.ca/dataset/bcc15e72-fe46-4215-8de0-33951662465e/resource/16edbf28-efb0-40f4-a7c2-76de16c558b0/download/non-profit-listing-status-definitions.xlsx"
+      }
+    },
+    "retrieved_utc": "2026-11-14T06:59:58Z"
+  },
+  "cra_charities_2024": {
+    "dataset_id": "80c00cdb-1358-415c-bb8b-0de7f12675b8",
+    "files": {
+      "compensation.csv": {
+        "bytes": 2432463,
+        "publisher_last_modified": "2026-11-13T21:04:20.593962",
+        "resource_id": "37fe5088-b30c-4713-9a42-5a3e7e08fcb0",
+        "rows": 43135,
+        "sha256": "a05b680864d12cc9b994da8a78763e85f06c1b5df5eeda88f64eea1fe093f2dd",
+        "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/37fe5088-b30c-4713-9a42-5a3e7e08fcb0/download/schedule_3_compensation_2024_updated.csv"
+      },
+      "financial.csv": {
+        "bytes": 21024705,
+        "publisher_last_modified": "2026-11-13T20:28:42.599500",
+        "resource_id": "e545170c-3689-4833-b2a8-e9e83100ab59",
+        "rows": 83872,
+        "sha256": "9b4d082c8611643f11210018b2c141441b77a0794c95c9cde4e75dc7311bb61e",
+        "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/e545170c-3689-4833-b2a8-e9e83100ab59/download/financial_d_and_schedule_6_2024_updated.csv"
+      },
+      "general_info.csv": {
+        "bytes": 11304254,
+        "publisher_last_modified": "2026-11-13T20:31:11.581286",
+        "resource_id": "fd7c8679-8032-4613-b2b7-44fb8bc9c7c9",
+        "rows": 84221,
+        "sha256": "47cb3b9113553979761cfe75bb35323e6d9c6a4c8141cb603ea8c103d738b9e1",
+        "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/fd7c8679-8032-4613-b2b7-44fb8bc9c7c9/download/financial_section_a_b_and_c_2024_updated.csv"
+      },
+      "ident.csv": {
+        "bytes": 13226927,
+        "publisher_last_modified": "2026-11-13T20:33:47.547106",
+        "resource_id": "694fdc72-eae4-4ee0-83eb-832ab7b230e3",
+        "rows": 84057,
+        "sha256": "3686d66f31ca030e61d03a246c118e2223d47c1d64dc9b3817a429bb6d06cc23",
+        "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/694fdc72-eae4-4ee0-83eb-832ab7b230e3/download/ident_2024_updated.csv"
+      },
+      "programs.csv": {
+        "bytes": 29489282,
+        "publisher_last_modified": "2026-11-13T20:35:53.686943",
+        "resource_id": "1f16eb1b-cc03-4c95-a81c-0fdc0722c5ee",
+        "rows": 95863,
+        "sha256": "c551a70a0290a1de50cbc16923e43472d7e5c64a3c3178b2992265c71d0cdcec",
+        "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/1f16eb1b-cc03-4c95-a81c-0fdc0722c5ee/download/new_ongoing_programs_2024_updated.csv"
+      },
+      "weburl.csv": {
+        "bytes": 1710410,
+        "publisher_last_modified": "2026-11-13T21:17:06.913120",
+        "resource_id": "e3567bb5-5d98-44d0-b0e8-9cdd3732c9e4",
+        "rows": 34529,
+        "sha256": "72c67336abc4006f2c4563c66dca5784ac3753f7d78f6723f76517cb19392031",
+        "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/e3567bb5-5d98-44d0-b0e8-9cdd3732c9e4/download/weburl_2024_updated.csv"
+      }
+    },
+    "retrieved_utc": "2026-11-14T06:59:53Z"
+  }
+}
