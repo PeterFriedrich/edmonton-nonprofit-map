@@ -12,4 +12,4 @@ no bullet here — the brief already carries `docs/DECISIONS.md`.
 
 ## Out of scope
 
-- <**Thing not to recommend** — one line on why not; pointer if any.>
+- **Scraping the 211 Alberta, InformAlberta or ECVO directories** — no open licence was found for any of them on 2026-11-14; they are used only with the publisher's permission (`TODO.md`).

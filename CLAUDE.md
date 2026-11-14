@@ -6,7 +6,7 @@
      derive from the code (layout, dependency lists) does not. -->
 
 ## Project
-<One or two sentences: what this is, what it produces, what it deliberately is not.>
+A map of registered charities in Edmonton and its metro ring, placed by similarity of what they do and grouped by category, so volunteer groups can find organizations for pro bono work. It produces a static site on GitHub Pages from CRA and Alberta open data. It is **not** a street map of offices, v1 leaves out non-profits that are not CRA charities, and it names no directors or officers. Spec: `docs/SPEC_map.md`.
 
 ## Key Files
 - `TODO.md` — living backlog and **the source of truth for progress**. Read it first to know what to work on; update it in place as items open/close. Session summaries narrate *what happened*; TODO.md owns *what's left*. Never redo a closed item without asking — its `## Done` section lists every closed item in one line each. Conversely, an *open* item can be stale — reproduce the symptom and re-measure the stated cause before acting on it. **When an item closes, move its body to `docs/TODO_archive.md` and leave a `## Done` line** (`python tools/todo_archive.py` does it in bulk) — this file is read every session, so it must hold live work, not history.
@@ -22,7 +22,8 @@
 - `docs/CLAUDE_WEB.md` — **read before a Claude web research chat**: the generated brief (`scripts/make_brief.py`), claude.ai Project sync, the reply format. `docs/SCOPE.md` is its one hand-kept input. **A PR that changes a synced file (`docs/BRIEF.md`, `docs/SPEC_*.md`, `docs/ARCHITECTURE.md`, `data/DATA.md`) opens its description with "After merge: press Sync in the claude.ai Project." and the changed synced paths, one per line** — the web side cannot notice it is stale, and the owner syncs by ticking paths. Asked "what do I sync?", answer with the paths first.
 - `docs/COPIER.md` — **read before pulling template changes** (`copier update`) or starting a project from the template.
 - `session-summary/` — session handoff notes. Read the latest before starting work; older ones live in `session-summary/archive/` (don't bulk-read them).
-- <`docs/SPEC_*.md`, `docs/ARCHITECTURE.md`, `docs/RUNBOOK.md` … add as they are written, one line each, with WHEN to read it>
+- `docs/SPEC_map.md` — the v1 scope: universe, boundary, main view, what is left out, open questions. **Read before proposing a feature or a new data source.**
+- <`docs/ARCHITECTURE.md`, `docs/RUNBOOK.md` … add as they are written, one line each, with WHEN to read it>
 
 ## Token Efficiency
 - **Never `Read` raw data files** (`.geojson`/`.csv`/large `.json`) — inspect via a small python summary instead. See `docs/TOKEN_EFFICIENCY.md`.
@@ -43,7 +44,8 @@
 - **A decision that protects a number is a test first, prose second.** Write the guard, then the `DECISIONS.md` row cites its ID; a row with nothing to cite is tagged `[unverifiable]`. `scripts/check_decisions_log.py` gates new rows on the merge path.
 - Keep processing steps as separate, independently runnable modules in `src/`
 - No silent data drops — flag unmatched or missing records explicitly
-- <domain-specific invariants, e.g. "Always set CRS explicitly before any area calculation">
+- Never write a director's or officer's name to any output file (`docs/SPEC_map.md` §6).
+- Every org carries `area` (`edmonton` or `metro_ring`) and its municipality (`docs/SPEC_map.md` §3).
 
 ## Comments & Scope
 - Comments only where the *why* is non-obvious. Don't narrate what the code plainly does.
