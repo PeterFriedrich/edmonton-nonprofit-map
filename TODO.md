@@ -12,7 +12,6 @@ symptom and re-measure the stated cause before acting on it.
 
 ### Build order (`docs/SPEC_map.md`)
 
-- [ ] **Settle the metro-ring place list.** Seven places were measured; find the rest (smaller towns, county hamlets) from the CRA `City` values in Alberta and propose the list to the owner. Done when the list is in one config file and has a `docs/DECISIONS.md` row.
 - [ ] **Build the org table.** Edmonton and ring filter, decoded category and sub-category, `area` and municipality, revenue band and paid staff (confirm the T3010 line numbers against CRA's data dictionary first). Unmatched or missing records are flagged, not dropped. Done when a test asserts the row count against the raw file and that every row has `area`.
 - [ ] **Guard: no director or officer name in any output.** Owed with the first output file; the 2026-11-14 decision row then cites it in place of `[unverifiable]`.
 - [ ] **Embed descriptions, lay them out in 2D, compute nearest neighbours.** Plan first (new module): model, layout method, how orgs with no description appear. Check `df -h /` before installing a model.
@@ -34,5 +33,7 @@ symptom and re-measure the stated cause before acting on it.
 ## Done
 
 Closed items moved out of `## Open work` live in **`docs/TODO_archive.md`** — one line each below, reasoning there.
+
+- [x] **Settle the metro-ring place list.** — DONE 2026-11-17 · `docs/TODO_archive.md`
 
 - [x] **Ingest the CRA 2024 files and the Alberta listing.** · `docs/TODO_archive.md`

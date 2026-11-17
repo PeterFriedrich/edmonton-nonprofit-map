@@ -1,0 +1,19 @@
+{
+  "_about": "The map's boundary: the City of Edmonton plus the metro ring, which is the other 12 of the 13 member municipalities of the former Edmonton Metropolitan Region Board (dissolved 2025). Each municipality lists the CRA ident.csv City values (upper case, trimmed, Province AB) that place a charity in it. City is a mailing-address field, so this is the mailing place, not a parcel. 'outside' lists City values that resemble a ring place but are not in it; tests/test_boundary.py fails on any look-alike in neither list. Decision: docs/DECISIONS.md, 2026-11-17.",
+  "municipalities": {
+    "Edmonton": {"area": "edmonton", "cities": ["EDMONTON"]},
+    "St. Albert": {"area": "metro_ring", "cities": ["ST. ALBERT", "ST ALBERT", "ST-ALBERT"]},
+    "Strathcona County": {"area": "metro_ring", "cities": ["SHERWOOD PARK", "ARDROSSAN"]},
+    "Spruce Grove": {"area": "metro_ring", "cities": ["SPRUCE GROVE"]},
+    "Leduc": {"area": "metro_ring", "cities": ["LEDUC"]},
+    "Fort Saskatchewan": {"area": "metro_ring", "cities": ["FORT SASKATCHEWAN", "FT-SASKATCHWN", "FT. SASKATCHEWAN", "FT SASKATCHEWAN"]},
+    "Stony Plain": {"area": "metro_ring", "cities": ["STONY PLAIN"]},
+    "Devon": {"area": "metro_ring", "cities": ["DEVON"]},
+    "Sturgeon County": {"area": "metro_ring", "cities": ["STURGEON COUNTY"]},
+    "Morinville": {"area": "metro_ring", "cities": ["MORINVILLE"]},
+    "Beaumont": {"area": "metro_ring", "cities": ["BEAUMONT"]},
+    "Leduc County": {"area": "metro_ring", "cities": ["LEDUC COUNTY", "NISKU", "NEW SAREPTA"]},
+    "Parkland County": {"area": "metro_ring", "cities": ["PARKLAND COUNTY", "RURAL PARKLAND COUNTY", "ACHESON", "ENTWISTLE"]}
+  },
+  "outside": ["SPRUCE VIEW", "STURGEON LAKE RESERVE"]
+}
