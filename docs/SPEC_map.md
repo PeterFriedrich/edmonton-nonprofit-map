@@ -35,11 +35,19 @@ The City of Edmonton **plus the metro ring**, and every org carries the
 division: `area` is `edmonton` or `metro_ring`, next to its municipality. The
 site shows the division and filters on it.
 
-The ring is a named list of places kept in one config file. Seven places were
-measured (St. Albert, Sherwood Park, Spruce Grove, Leduc, Fort Saskatchewan,
-Stony Plain, Beaumont): 438 charities. The final list is settled when the org
-table is built (`TODO.md`), because CRA's `City` is a free-text mailing-address
-field and smaller places and county hamlets have to be found in the data.
+The ring is the other 12 of the 13 member municipalities of the former
+Edmonton Metropolitan Region Board (dissolved 2025): St. Albert, Strathcona
+County, Spruce Grove, Leduc, Fort Saskatchewan, Stony Plain, Devon, Sturgeon
+County, Morinville, Beaumont, Leduc County and Parkland County. The list, with
+the CRA `City` spellings that place a charity in each, is
+`config/boundary.json`. On the 2026-11-14 file it gives 1,866 charities in
+Edmonton and 564 in the ring. Rejected: Statistics Canada's census
+metropolitan area, which adds eight small towns and villages (about 57
+charities) and is revised each census.
+
+CRA's `City` is a free-text mailing-address field, so the municipality is the
+mailing place, and a new spelling of a ring place must be added to the config;
+`tests/test_boundary.py` fails until it is.
 
 ## 4. Main view
 
@@ -75,7 +83,6 @@ JavaScript page reads it, and GitHub Actions deploys to GitHub Pages. At about
 
 ## 8. Open questions
 
-- The metro-ring place list (§3).
 - The embedding model and the 2D layout method.
 - Which T3010 fields give revenue and paid staff (§5).
 - Whether the 2024 list omits charities that had not filed when it was built.

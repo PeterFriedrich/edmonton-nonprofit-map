@@ -46,6 +46,7 @@ below are from the 2026-11-14 run; the manifest is the record.
   - All files are UTF-8 with no byte-order mark.
   - Every file except `ident.csv` can hold several rows per business number (more than one fiscal period, or several programs or web addresses). Pick the row before joining.
   - `City` is free text in upper case from the mailing address. `Province == 'AB'` and `City == 'EDMONTON'` gives 1,866 rows.
+  - Places come in several spellings (`ST ALBERT`, `ST-ALBERT`, `FT-SASKATCHWN`) and as county names or hamlets (`STURGEON COUNTY`, `NISKU`). `config/boundary.json` lists the ones found.
   - `Category` and `Sub Category` are codes; the decode is in the dataset's "Codes Lists" PDF.
   - `Program Type` takes `OP`, `NP` and `NA`. `NP` rows often read "No new programs were introduced", so descriptions come from `OP` rows.
   - The financial and compensation columns are T3010 line numbers; their meaning is in the dataset's data dictionary PDF and has not been checked here yet.
