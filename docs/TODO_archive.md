@@ -8,6 +8,8 @@ Items are verbatim as they were closed, newest-moved first in the order they app
 
 ---
 
+- [x] **Answer the fit table** in `docs/CHANGE_PIPELINE.md` (every row is still `not evaluated`), and list this repo's risk paths.
+
 - [x] **Settle the metro-ring place list.** DONE 2026-11-17: `config/boundary.json`, the 12 other metro-board municipalities. Seven places were measured; find the rest (smaller towns, county hamlets) from the CRA `City` values in Alberta and propose the list to the owner. Done when the list is in one config file and has a `docs/DECISIONS.md` row.
 
 - [x] **Ingest the CRA 2024 files and the Alberta listing.** Downloaders in `src/` for CRA identification, charitable programs and the financial files, and the Alberta Non-Profit Listing, each failing hard when its row count differs from the publisher's. Done when the raw files are in `data/raw/` and `data/DATA.md` records columns, counts and vintage for each.
