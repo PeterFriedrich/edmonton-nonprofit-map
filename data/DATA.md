@@ -47,9 +47,16 @@ below are from the 2026-11-14 run; the manifest is the record.
   - Every file except `ident.csv` can hold several rows per business number (more than one fiscal period, or several programs or web addresses). Pick the row before joining.
   - `City` is free text in upper case from the mailing address. `Province == 'AB'` and `City == 'EDMONTON'` gives 1,866 rows.
   - Places come in several spellings (`ST ALBERT`, `ST-ALBERT`, `FT-SASKATCHWN`) and as county names or hamlets (`STURGEON COUNTY`, `NISKU`). `config/boundary.json` lists the ones found.
-  - `Category` and `Sub Category` are codes; the decode is in the dataset's "Codes Lists" PDF.
   - `Program Type` takes `OP`, `NP` and `NA`. `NP` rows often read "No new programs were introduced", so descriptions come from `OP` rows.
-  - The financial and compensation columns are T3010 line numbers; their meaning is in the dataset's data dictionary PDF and has not been checked here yet.
+  - The financial, general-information and compensation columns are T3010 line numbers. Their meanings are in the dataset's data dictionary PDF (v2.0, checked 2026-11-19); the detailed line guide is CRA's T4033. The lines this project uses:
+    - `financial.csv` `4700`: total revenue (lines 4500, 4510 to 4580, 4600 to 4650). `Section Used` is `D` or `6` (the short or the full financial form); both carry 4700.
+    - `general_info.csv` `3400`: Y/N, the charity incurred expenses for compensation of employees. Schedule 3 (`compensation.csv`) is filed exactly when this is Y: of our 2,430 charities, 1,284 say Y, 1,275 of those have a compensation row, and no compensation row has anything but Y.
+    - `compensation.csv` `300`: permanent full-time compensated positions; `370`: part-time or part-year employees.
+  - The dictionary marks most amounts "Empty for exempt charities" without defining an exempt charity. Of our 2,420 charities with a financial row, 4700 is blank for 97 (22 of them blank in every amount) and 0 for 29; 2 are negative.
+  - Blank is not zero in Schedule 3: on our rows `300` is blank 159 times and `0` 42 times, `370` blank 242 times and `0` 66 times. `src/build_orgs.py` keeps blank as not reported.
+  - Total compensation appears twice, `390` in Schedule 3 and `4880` in the financial file; they differ by $1 or more for 118 of the 1,124 charities that have both.
+  - The general-information header `5030  ` has two trailing spaces.
+  - Category, sub-category and designation codes are decoded by `config/cra_codes.json`, taken from the Codes Lists PDF (v1.0, 2021-05-26). Sub-category codes repeat across categories, so the key is `<category>-<sub-category>`. The PDF lists no sub-categories for category `0155` (Upholding Human Rights), which `ident.csv` uses for 53 charities (`docs/DATA_ISSUES.md`).
   - The weburl key column is `BN/NE`, not `BN`.
 
 ### Alberta Non-Profit Listing (`data/raw/alberta_nonprofit_listing/`)

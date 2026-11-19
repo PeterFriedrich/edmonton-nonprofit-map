@@ -67,8 +67,11 @@ Edmonton and one holds 580 of the 1,866 orgs.
 
 Size filters from the T3010 financial files (revenue band, paid staff), so a
 visitor can find orgs large enough to have data and small enough to lack an
-analyst. The financial files have not been opened; the fields are picked at
-ingest.
+analyst. Revenue is T3010 line 4700 (total revenue), in five bands: under
+$50k, $50k–250k, $250k–1M, $1M–5M, $5M and over. Paid staff is line 3400
+(yes or no), with counts of full-time (line 300) and part-time (line 370)
+staff from Schedule 3. A blank stays unknown, never zero, and the org carries
+a flag saying why (`src/build_orgs.py`; line details in `data/DATA.md`).
 
 ## 6. People
 
@@ -84,7 +87,6 @@ JavaScript page reads it, and GitHub Actions deploys to GitHub Pages. At about
 ## 8. Open questions
 
 - The embedding model and the 2D layout method.
-- Which T3010 fields give revenue and paid staff (§5).
 - Whether the 2024 list omits charities that had not filed when it was built.
 - How the 97 Edmonton charities with no ongoing-program description appear.
   They must not be dropped silently: listed and flagged at the least.

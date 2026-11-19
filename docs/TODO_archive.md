@@ -8,6 +8,10 @@ Items are verbatim as they were closed, newest-moved first in the order they app
 
 ---
 
+- [x] **Build the org table.** Edmonton and ring filter, decoded category and sub-category, `area` and municipality, revenue band and paid staff (confirm the T3010 line numbers against CRA's data dictionary first). Unmatched or missing records are flagged, not dropped. Done when a test asserts the row count against the raw file and that every row has `area`.
+
+- [x] **Guard: no director or officer name in any output.** Owed with the first output file; the 2026-11-14 decision row then cites it in place of `[unverifiable]`.
+
 - [x] **Answer the fit table** in `docs/CHANGE_PIPELINE.md` (every row is still `not evaluated`), and list this repo's risk paths.
 
 - [x] **Settle the metro-ring place list.** DONE 2026-11-17: `config/boundary.json`, the 12 other metro-board municipalities. Seven places were measured; find the rest (smaller towns, county hamlets) from the CRA `City` values in Alberta and propose the list to the owner. Done when the list is in one config file and has a `docs/DECISIONS.md` row.
