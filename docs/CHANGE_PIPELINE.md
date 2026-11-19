@@ -231,33 +231,33 @@ the point: it shows the owner a gap, such as `master` with no required check.
 
 | Stage | Step | This project |
 |---|---|---|
-| Before the PR | Plan first for a new module, schema or CI change | not evaluated |
-| | Reproduce before fixing | not evaluated |
-| | A decision that protects a number is a test first | not evaluated |
-| | Unproven premises indexed in `docs/ASSUMPTIONS.md` | not evaluated |
-| | Verify, and show the output | not evaluated |
-| | A moved published number shown old → new, with why | not evaluated |
-| | Break each new or changed guard on purpose | not evaluated |
-| | Review the diff with `/code-review` (trial) | not evaluated |
-| | `/security-review` on this repo's risky paths (list them) | not evaluated |
-| | A kind of finding seen twice is fixed at the source | not evaluated |
-| | Commit each working unit | not evaluated |
-| The PR | A fresh branch from `origin/master` per PR | not evaluated |
-| | `Code review:` line in the description (trial) | not evaluated |
-| | Pre-existing findings go to `TODO.md` or a ledger, not this PR | not evaluated |
-| | A bug-fix PR names its cause | not evaluated |
-| | The description carries `Tested:` and `Undo:` | not evaluated |
-| | `Risk:` tier set by this repo's path list (list them) | not evaluated |
-| | Sync note for claude.ai-synced files | not evaluated |
-| | CI green, and `master` requires the `test` check | not evaluated |
-| | No timed PR check-ins | not evaluated |
-| Merging | Docs-only self-merge per the core, or `overrides core: self-merge` (name the paths) | not evaluated |
-| | A push after the owner looked is announced on the PR | not evaluated |
-| | Pre-push hook enabled (`git config core.hooksPath .githooks`) | not evaluated |
-| | Work confirmed on `master` with `git merge-base` | not evaluated |
-| After the merge | Template changes pulled by `copier update` | not evaluated |
-| | Publish, with a gate before it ships | not evaluated |
-| | Seen before the public build | not evaluated |
-| | Watch and roll back | not evaluated |
-| | Fixes after a merge are counted (the guardrail) | not evaluated |
-| | Upstream data defects logged in `docs/DATA_ISSUES.md` | not evaluated |
+| Before the PR | Plan first for a new module, schema or CI change | adopted: `CLAUDE.md` §"Comments & Scope" (habit) |
+| | Reproduce before fixing | adopted: `CLAUDE.md` Key Files, TODO rule (habit) |
+| | A decision that protects a number is a test first | adopted: `scripts/check_decisions_log.py` in `tests.yml` |
+| | Unproven premises indexed in `docs/ASSUMPTIONS.md` | adopted: `scripts/check_assumptions.py` in `tests.yml` |
+| | Verify, and show the output | adopted: `tests.yml` runs pytest and the guards; output quoted in `Tested:` (habit) |
+| | A moved published number shown old → new, with why | later: the first published output (the org table feeding the page); nothing is published yet |
+| | Break each new or changed guard on purpose | adopted: habit (PR #3 ran seven mutations) |
+| | Review the diff with `/code-review` (trial) | later: the owner starts the trial; PRs #3 and #5 ran none |
+| | `/security-review` on this repo's risky paths (list them) | adopted: template defaults; for this repo that means `.github/workflows/`, the Pages deploy once it exists, any data file added to this public repo, and the page rendering CRA program text as HTML |
+| | A kind of finding seen twice is fixed at the source | adopted: habit |
+| | Commit each working unit | adopted: `CLAUDE.md` §"Session Management" (habit) |
+| The PR | A fresh branch from `origin/master` per PR | adopted: `.githooks/pre-push` blocks pushes to a merged PR's branch |
+| | `Code review:` line in the description (trial) | adopted: PRs #3 and #5 carry it, saying "not run" while the trial is off |
+| | Pre-existing findings go to `TODO.md` or a ledger, not this PR | adopted: habit; data findings go to `docs/DATA_ISSUES.md` |
+| | A bug-fix PR names its cause | adopted: habit (no bug-fix PR yet) |
+| | The description carries `Tested:` and `Undo:` | adopted: habit (PRs #3, #5) |
+| | `Risk:` tier set by this repo's path list (list them) | adopted: template defaults, plus high for `config/boundary.json` (decides which orgs are in the map) and any `src/` code that writes an output file (the no-director-names rule, `docs/SPEC_map.md` §6) |
+| | Sync note for claude.ai-synced files | adopted: `CLAUDE.md` Key Files (habit); `docs/BRIEF.md` is not generated yet |
+| | CI green, and `master` requires the `test` check | adopted: `tests.yml`; branch protection requires `test` (checked 2026-11-19) |
+| | No timed PR check-ins | adopted: `CLAUDE.md` §"Session Management" |
+| Merging | Docs-only self-merge per the core, or `overrides core: self-merge` (name the paths) | adopted: the core rule as written, no override; there are no published paths until the page exists |
+| | A push after the owner looked is announced on the PR | adopted: habit |
+| | Pre-push hook enabled (`git config core.hooksPath .githooks`) | adopted: set in the main clone (checked 2026-11-19); a fresh clone must set it (`CLAUDE.md`) |
+| | Work confirmed on `master` with `git merge-base` | adopted: habit; for a squash merge, test the landed commit (PR #5 landed as `f7fec41`) |
+| After the merge | Template changes pulled by `copier update` | adopted: `scripts/template_drift.py` session-start hook; PR #5 |
+| | Publish, with a gate before it ships | later: the Pages deploy (TODO Build order) |
+| | Seen before the public build | later: decided with the Pages deploy |
+| | Watch and roll back | later: the first deploy; until then, `gh issue list` at session start |
+| | Fixes after a merge are counted (the guardrail) | later: the first published output |
+| | Upstream data defects logged in `docs/DATA_ISSUES.md` | adopted: one row so far (CRA CSV vs datastore API, NOT SENT) |
