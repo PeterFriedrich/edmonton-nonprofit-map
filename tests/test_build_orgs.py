@@ -119,7 +119,7 @@ def test_undecoded_category_is_flagged(tmp_path):
 # --- revenue ---------------------------------------------------------------------
 
 @pytest.mark.parametrize("value,band", [
-    (None, ""), (-5, "under_50k"), (0, "under_50k"), (49_999, "under_50k"),
+    (None, ""), (-5, ""), (0, "under_50k"), (49_999, "under_50k"),
     (50_000, "50k_250k"), (249_999, "50k_250k"), (250_000, "250k_1m"),
     (1_000_000, "1m_5m"), (4_999_999, "1m_5m"), (5_000_000, "5m_plus"),
 ])
@@ -136,6 +136,33 @@ def test_revenue_blank_is_not_zero(tmp_path):
     assert (_one(rows, "2")["revenue_total"], _one(rows, "2")["revenue_band"]) == ("0", "under_50k")
     assert _one(rows, "2")["flags"] == "no_general_info_row"
     assert "no_financial_row" in _one(rows, "3")["flags"].split(";")
+
+
+def test_negative_revenue_has_no_band_and_is_flagged(tmp_path):
+    rows = _tree(tmp_path, [_ident("1")], fin=[{"BN": "1", "FPE": "2024-03-31", "4700": "-9813"}])
+    r = _one(rows, "1")
+    assert (r["revenue_total"], r["revenue_band"]) == ("-9813", "")
+    assert "revenue_negative" in r["flags"].split(";")
+
+
+def test_undecoded_designation_is_flagged(tmp_path):
+    ident = _ident("1")
+    ident["Designation"] = "Z"
+    rows = _tree(tmp_path, [ident])
+    assert _one(rows, "1")["designation"] == ""
+    assert "designation_not_decoded" in _one(rows, "1")["flags"].split(";")
+
+
+def test_fractional_staff_count_stops_the_build(tmp_path):
+    with pytest.raises(ValueError, match="not a whole number"):
+        _tree(tmp_path, [_ident("1")], comp=[{"BN": "1", "FPE": "2024-03-31", "300": "1.5", "370": "0"}])
+
+
+def test_paid_staff_with_zero_positions_is_flagged(tmp_path):
+    rows = _tree(tmp_path, [_ident("1")],
+                 gen=[{"BN": "1", "FPE": "2024-03-31", "3400": "Y"}],
+                 comp=[{"BN": "1", "FPE": "2024-03-31", "300": "0", "370": "0"}])
+    assert "paid_staff_zero_positions" in _one(rows, "1")["flags"].split(";")
 
 
 def test_latest_period_is_used_and_flagged(tmp_path):
@@ -185,7 +212,7 @@ def real():
               for c in m["cities"]}
     with open(RAW / "ident.csv", encoding="utf-8", newline="") as f:
         ours = {r["BN"] for r in csv.DictReader(f)
-                if r["Province"] == "AB" and r["City"].strip().upper() in cities}
+                if r["Province"].strip() == "AB" and r["City"].strip().upper() in cities}
     with open(RAW / "financial.csv", encoding="utf-8", newline="") as f:
         fin = [r for r in csv.DictReader(f) if r["BN"] in ours]
     return rows, ours, fin

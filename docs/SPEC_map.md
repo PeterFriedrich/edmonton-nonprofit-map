@@ -70,8 +70,8 @@ visitor can find orgs large enough to have data and small enough to lack an
 analyst. Revenue is T3010 line 4700 (total revenue), in five bands: under
 $50k, $50k–250k, $250k–1M, $1M–5M, $5M and over. Paid staff is line 3400
 (yes or no), with counts of full-time (line 300) and part-time (line 370)
-staff from Schedule 3. A blank stays unknown, never zero, and the org carries
-a flag saying why (`src/build_orgs.py`; line details in `data/DATA.md`).
+staff from Schedule 3. A blank stays unknown, never zero, a negative revenue gets
+no band, and the org carries a flag saying why (`src/build_orgs.py`; line details in `data/DATA.md`).
 
 ## 6. People
 

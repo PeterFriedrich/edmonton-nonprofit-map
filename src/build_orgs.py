@@ -79,7 +79,8 @@ def latest(rows: list[dict]) -> dict:
 
 
 def revenue_band(amount: int | None) -> str:
-    if amount is None:
+    # A negative total revenue fits no size band; build() flags it.
+    if amount is None or amount < 0:
         return ""
     for floor, label in REVENUE_BANDS:
         if amount >= floor:
@@ -94,7 +95,11 @@ def amount(value: str) -> int | None:
 
 def count(value: str) -> str:
     value = value.strip()
-    return "" if value == "" else str(int(float(value)))
+    if value == "":
+        return ""
+    if float(value) != int(float(value)):
+        raise ValueError(f"staff count {value!r} is not a whole number")
+    return str(int(float(value)))
 
 
 def build(raw_dir: Path, config_dir: Path) -> list[dict]:
@@ -114,6 +119,9 @@ def build(raw_dir: Path, config_dir: Path) -> list[dict]:
         flags = []
         municipality, area = place[r["City"].strip().upper()]
 
+        designation = codes["designations"].get(r["Designation"], "")
+        if not designation:
+            flags.append("designation_not_decoded")
         cat, sub = r["Category"], r["Sub Category"]
         if cat not in codes["categories"]:
             flags.append("category_not_decoded")
@@ -136,6 +144,8 @@ def build(raw_dir: Path, config_dir: Path) -> list[dict]:
             revenue = amount(f[REVENUE_LINE])
             if revenue is None:
                 flags.append("revenue_not_reported")
+            elif revenue < 0:
+                flags.append("revenue_negative")
 
         paid = ""
         if g is None:
@@ -150,6 +160,8 @@ def build(raw_dir: Path, config_dir: Path) -> list[dict]:
             full, part = count(c[FULL_TIME_LINE]), count(c[PART_TIME_LINE])
             if full == "" or part == "":
                 flags.append("staff_not_reported")
+            elif paid == "yes" and full == part == "0":
+                flags.append("paid_staff_zero_positions")
         elif paid == "yes":
             flags.append("no_compensation_row")
 
@@ -157,7 +169,7 @@ def build(raw_dir: Path, config_dir: Path) -> list[dict]:
             "bn": bn,
             "legal_name": r["Legal Name"].strip(),
             "account_name": r["Account Name"].strip(),
-            "designation": codes["designations"].get(r["Designation"], ""),
+            "designation": designation,
             "city_raw": r["City"].strip(),
             "municipality": municipality,
             "area": area,
