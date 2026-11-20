@@ -52,6 +52,9 @@ def stamp(html: str, root: Path) -> tuple[str, set[str]]:
 def build(src: Path, out: Path) -> set[str]:
     if out.name != "_site" and out.exists():
         raise ValueError(f"refusing to replace {out}: the output folder must be named _site")
+    s, o = src.resolve(), out.resolve()
+    if s == o or o in s.parents or s in o.parents:
+        raise ValueError(f"the output {out} and the source {src} overlap")
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(src, out)

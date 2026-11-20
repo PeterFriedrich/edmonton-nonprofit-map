@@ -1,6 +1,7 @@
 """The Pages build (scripts/build_site.py) and the page's text-only rendering rule."""
 
 import hashlib
+import json
 import re
 import shutil
 import sys
@@ -78,6 +79,24 @@ def test_the_build_only_replaces_a_folder_named_site(tmp_path):
     with pytest.raises(ValueError, match="must be named _site"):
         build_site.build(SITE, keep)
     assert keep.exists()
+
+
+def test_the_build_never_replaces_its_own_source(tmp_path):
+    src = tmp_path / "_site"
+    shutil.copytree(SITE, src)
+    with pytest.raises(ValueError, match="overlap"):
+        build_site.build(src, src)
+    assert (src / "index.html").exists()
+
+
+def test_every_flag_in_the_data_has_a_note_on_the_card():
+    code = (SITE / "app.js").read_text(encoding="utf-8")
+    block = code[code.index("const FLAG_TEXT = {"):]
+    block = block[:block.index("};")]
+    explained = set(re.findall(r"^\s+(\w+):", block, re.M))
+    data = json.loads((SITE / "data" / "orgs.json").read_text(encoding="utf-8"))
+    used = {f for o in data["orgs"] for f in o["flags"]} - {"no_description"}
+    assert used - explained == set()
 
 
 # CRA descriptions and names are free text (some contain "<", ">" and "&"), so

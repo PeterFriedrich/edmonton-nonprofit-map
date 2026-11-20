@@ -33,6 +33,10 @@
     short_description: "Very short description, so its position is uncertain.",
     shared_description: "Shares its exact description with other charities.",
     website_unusable: "CRA's website field for this charity is not a web address.",
+    category_not_decoded: "Its CRA category code is not in CRA's code list.",
+    sub_category_not_decoded: "Its CRA sub-category code is not in CRA's code list.",
+    designation_not_decoded: "Its CRA designation code is not in CRA's code list.",
+    no_other_description: "It is the only charity with a description, so it has no position.",
   };
   const CRA_PAGE = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/chrtydtls/";
   const PAGE_SIZE = 100;
@@ -68,6 +72,10 @@
     return node;
   }
   function add(node, ...children) { node.append(...children.flat().filter((c) => c !== null && c !== undefined && c !== false)); }
+  // The charity a link points at (#<BN>), or "" for none or a malformed hash.
+  function hashBn() {
+    try { return decodeURIComponent(location.hash.slice(1)); } catch (_) { return ""; }
+  }
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
   function headOf(o) { const c = Number(o.category_code); return HEADS.find((h) => h.has(c)); }
   function externalLink(href, text) {
@@ -182,7 +190,7 @@
     if (state.q) {
       ctx.strokeStyle = colors.ring; ctx.lineWidth = 2; ctx.beginPath();
       for (const o of placed) {
-        if (!nameHit(o)) continue;
+        if (!nameHit(o) || !matches(o)) continue;
         const [x, y] = toScreen(o.x, o.y); ctx.moveTo(x + r + 3, y); ctx.arc(x, y, r + 3, 0, Math.PI * 2);
       }
       ctx.stroke();
@@ -244,7 +252,11 @@
     if (pointers.size === 0) { drag = null; canvas.classList.remove("dragging"); }
   }
   canvas.addEventListener("pointerup", endPointer);
-  canvas.addEventListener("pointercancel", endPointer);
+  canvas.addEventListener("pointercancel", (e) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinch = null;
+    if (pointers.size === 0) { drag = null; canvas.classList.remove("dragging"); }
+  });
   canvas.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") hideTip(); });
   canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
@@ -281,7 +293,7 @@
     card.hidden = true; results.hidden = false; clear(results);
     let items = null, title = null;
     if (state.list === "unplaced") {
-      items = orgs.filter((o) => o.x === null && matches(o));
+      items = orgs.filter((o) => o.x === null && matches(o) && (!state.q || nameHit(o)));
       title = `${fmt.format(items.length)} charities not on the map`;
       results.append(el("button", { type: "button", className: "link-button back", onclick: () => { state.list = null; renderList(); } }, "← Back"),
         el("h2", null, title),
@@ -309,6 +321,10 @@
     }
   }
 
+  function revenueText(o) {
+    if (o.revenue_band) return REVENUE_LABEL[o.revenue_band];
+    return o.flags.includes("revenue_negative") ? "negative (no band)" : "not reported";
+  }
   function staffText(o) {
     if (o.has_paid_staff === "no") return "No paid staff";
     if (o.has_paid_staff !== "yes") return "Paid staff not reported";
@@ -326,7 +342,7 @@
       o.legal_name ? el("p", { className: "meta" }, `Legal name: ${o.legal_name}`) : null,
       el("p", { className: "meta" }, [o.category, o.sub_category].filter(Boolean).join(" · ") + (head ? ` (${head.label})` : "")),
       el("p", { className: "meta" }, `${o.area === "edmonton" ? "Edmonton" : `${o.municipality} (metro ring)`} · ${o.designation}`),
-      el("p", { className: "meta" }, `Revenue: ${o.revenue_band ? REVENUE_LABEL[o.revenue_band] : "not reported"} · ${staffText(o)}` + (o.fpe ? ` · fiscal year ending ${o.fpe}` : "")),
+      el("p", { className: "meta" }, `Revenue: ${revenueText(o)} · ${staffText(o)}` + (o.fpe ? ` · fiscal year ending ${o.fpe}` : "")),
       el("div", { className: "links" },
         externalLink(CRA_PAGE + encodeURIComponent(o.bn), "CRA charity page"),
         o.website ? externalLink(o.website, "Website") : null),
@@ -344,7 +360,8 @@
       add(card, el("h3", null, "Most similar descriptions"),
         el("ul", { className: "list" }, o.neighbours.map(([bn, s]) => orgButton(byBn.get(bn), `similarity ${s.toFixed(2)}`))));
     }
-    const notes = o.flags.map((f) => FLAG_TEXT[f]).filter(Boolean);
+    // no_description is said in the card's description section already.
+    const notes = o.flags.filter((f) => f !== "no_description").map((f) => FLAG_TEXT[f] || f);
     if (notes.length) add(card, el("h3", null, "Notes on the data"), el("ul", null, notes.map((t) => el("li", { className: "note" }, t))));
     card.scrollTop = 0; $("panel").scrollTop = 0;
   }
@@ -391,13 +408,13 @@
       .map(([code, c]) => [code, `${c.label} (${fmt.format(c.n)})`, c.head ? c.head.label : "Other"]));
     const revs = count("revenue_band");
     fillSelect("f-rev", REVENUE.filter(([k]) => revs.has(k)).map(([k, label]) => [k, `${label} (${fmt.format(revs.get(k))})`])
-      .concat(revs.has(null) ? [["none", `Not reported (${fmt.format(revs.get(null))})`]] : []));
+      .concat(revs.has(null) ? [["none", `No band: not reported or negative (${fmt.format(revs.get(null))})`]] : []));
 
     const heads = $("heads");
     for (const h of HEADS) {
       const n = orgs.filter((o) => o.x !== null && headOf(o) === h).length;
       heads.append(el("button", { type: "button", className: "head", "aria-pressed": "false", "data-head": h.id,
-        onclick: () => { state.head = state.head === h.id ? "" : h.id; syncHeads(); draw(); } },
+        onclick: () => { state.head = state.head === h.id ? "" : h.id; syncHeads(); updateStatus(); draw(); } },
         h.label, el("span", { className: "n" }, fmt.format(n))));
     }
     const bind = (id, key) => $(id).addEventListener("input", (e) => {
@@ -426,9 +443,11 @@
     $("show-all").hidden = !out;
   }
   function updateStatus() {
-    const lit = placed.filter(matches).length;
-    $("status").textContent = filtering()
-      ? `${fmt.format(lit)} of ${fmt.format(placed.length)} dots match the filters`
+    const head = HEADS.find((h) => h.id === state.head);
+    const lit = placed.filter((o) => matches(o) && (!head || head.has(Number(o.category_code)))).length;
+    const why = [filtering() ? "the filters" : "", head ? head.label.toLowerCase() : ""].filter(Boolean).join(" and ");
+    $("status").textContent = why
+      ? `${fmt.format(lit)} of ${fmt.format(placed.length)} dots lit (${why}).`
       : `${fmt.format(placed.length)} charities on the map.`;
   }
 
@@ -445,7 +464,7 @@
     $("retrieved").textContent = doc.source.cra_retrieved_utc.slice(0, 10);
     buildControls();
     boxes(); readColors(); resize(false); updateStatus();
-    const fromHash = decodeURIComponent(location.hash.slice(1));
+    const fromHash = hashBn();
     if (byBn.has(fromHash)) select(fromHash, true); else renderList();
     draw();
   }
@@ -454,10 +473,10 @@
   if (window.matchMedia("(max-width: 760px)").matches) $("filters").open = false;
 
   window.addEventListener("hashchange", () => {
-    const bn = decodeURIComponent(location.hash.slice(1));
+    const bn = hashBn();
     if (byBn.has(bn) && bn !== state.selected) select(bn, true);
   });
-  window.addEventListener("resize", () => { resize(true); draw(); });
+  window.addEventListener("resize", () => { if (mainBox) { resize(true); draw(); } });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { readColors(); draw(); });
 
   fetch(DATA_URL)
