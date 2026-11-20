@@ -236,7 +236,7 @@ the point: it shows the owner a gap, such as `master` with no required check.
 | | A decision that protects a number is a test first | adopted: `scripts/check_decisions_log.py` in `tests.yml` |
 | | Unproven premises indexed in `docs/ASSUMPTIONS.md` | adopted: `scripts/check_assumptions.py` in `tests.yml` |
 | | Verify, and show the output | adopted: `tests.yml` runs pytest and the guards; output quoted in `Tested:` (habit) |
-| | A moved published number shown old → new, with why | later: the first published output (the org table feeding the page); nothing is published yet |
+| | A moved published number shown old → new, with why | adopted: habit; `python src/build_site_data.py` and `python src/layout.py` log the counts the page shows (charities, placed, websites, flags) |
 | | Break each new or changed guard on purpose | adopted: habit (PR #3 ran seven mutations) |
 | | Review the diff with `/code-review` (trial) | later: the owner starts the trial; PRs #3 and #5 ran none |
 | | `/security-review` on this repo's risky paths (list them) | adopted: template defaults; for this repo that means `.github/workflows/`, the Pages deploy once it exists, any data file added to this public repo, and the page rendering CRA program text as HTML |
@@ -251,13 +251,13 @@ the point: it shows the owner a gap, such as `master` with no required check.
 | | Sync note for claude.ai-synced files | adopted: `CLAUDE.md` Key Files (habit); `docs/BRIEF.md` is not generated yet |
 | | CI green, and `master` requires the `test` check | adopted: `tests.yml`; branch protection requires `test` (checked 2026-11-19) |
 | | No timed PR check-ins | adopted: `CLAUDE.md` §"Session Management" |
-| Merging | Docs-only self-merge per the core, or `overrides core: self-merge` (name the paths) | adopted: the core rule as written, no override; there are no published paths until the page exists |
+| Merging | Docs-only self-merge per the core, or `overrides core: self-merge` (name the paths) | adopted: the core rule as written, no override; the published path is `site/` (since 2026-11-20) |
 | | A push after the owner looked is announced on the PR | adopted: habit |
 | | Pre-push hook enabled (`git config core.hooksPath .githooks`) | adopted: set in the main clone (checked 2026-11-19); a fresh clone must set it (`CLAUDE.md`) |
 | | Work confirmed on `master` with `git merge-base` | adopted: habit; for a squash merge, test the landed commit (PR #5 landed as `f7fec41`) |
 | After the merge | Template changes pulled by `copier update` | adopted: `scripts/template_drift.py` session-start hook; PR #5 |
-| | Publish, with a gate before it ships | later: the Pages deploy (TODO Build order) |
-| | Seen before the public build | later: decided with the Pages deploy |
-| | Watch and roll back | later: the first deploy; until then, `gh issue list` at session start |
+| | Publish, with a gate before it ships | adopted: `.github/workflows/pages.yml` deploys `site/` on every push to `master` after pytest passes; a red run uploads nothing |
+| | Seen before the public build | no: one person; the check is `python scripts/build_site.py` served locally and looked at in a browser before the PR |
+| | Watch and roll back | adopted: a failed Pages run emails the owner; roll back with `git revert`, whose push redeploys. A browser check of the built output in CI is later: the first bug a unit test missed |
 | | Fixes after a merge are counted (the guardrail) | later: the first published output |
 | | Upstream data defects logged in `docs/DATA_ISSUES.md` | adopted: one row so far (CRA CSV vs datastore API, NOT SENT) |

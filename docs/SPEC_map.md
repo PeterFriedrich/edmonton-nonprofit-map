@@ -52,8 +52,23 @@ mailing place, and a new spelling of a ring place must be added to the config;
 ## 4. Main view
 
 A **similarity map**: orgs sit near others whose program descriptions are
-similar, coloured by category, with search, filters and an org card that links
-to the org's CRA page.
+similar, with search, filters, and an org card that shows its description and
+ten nearest neighbours and links to its CRA page
+(`https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/chrtydtls/<BN>`, checked
+2026-11-20 in a headless browser; the older `dsplyRprtngPrd?selectedCharityBn=`
+form returns an error page).
+
+**Colour** (settled 2026-11-20). Dots are one colour; the visitor highlights
+one of CRA's four heads of charity at a time (relief of poverty, codes
+0001–0002; education, 0010–0015; religion, 0030–0090; other purposes
+beneficial to the community, 0100–0215; from the Codes Lists PDF §2.2), and
+the rest turn grey. The category filter does the same for any of the 28
+categories. Rejected: a colour per head. No set of four or five colours from
+a validated categorical palette stays apart in every pair, in both light and
+dark mode, for colour-blind readers, and a scatter puts every pair side by
+side. Also rejected: four colours with four marker shapes (one pair still
+fails for full-colour readers), and three colours with the fourth head grey
+(reads as "unclassified").
 
 Rejected as the main view: a street map. CRA addresses are often mailing
 addresses and the Alberta listing gives only a postal code, so a street map
@@ -71,7 +86,11 @@ fixed seed lays it out in 2D, and each org's ten nearest neighbours are found
 by cosine similarity on the full vectors (`src/layout.py`). An org with no
 description is listed, searchable and flagged, but not placed, because a
 position would claim a similarity with no evidence behind it. Short and
-word-for-word shared descriptions are flagged. `data/processed/layout.csv` is
+word-for-word shared descriptions are flagged. Both axes are scaled by one
+factor, so the picture keeps UMAP's proportions. The 41 Jehovah's Witnesses
+congregations sit far from everything else, so the page's default view fits
+the 2.5th to 97.5th percentile of the dots on each axis, says how many are
+outside the view, and offers to show all. `data/processed/layout.csv` is
 committed, so the Pages build needs no model. Rejected: an embeddings API
 (billed), t-SNE (loses the large-scale structure), PCA (blurs the clusters),
 and placing undescribed orgs by sub-category.
