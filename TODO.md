@@ -12,7 +12,7 @@ symptom and re-measure the stated cause before acting on it.
 
 ### Build order (`docs/SPEC_map.md`)
 
-- [ ] **Build the page and the GitHub Pages deploy.** Plan first (CI change). Read `docs/WEB_CACHE_BUSTING.md` before the build step. Descriptions are free text and may name a person: decide what the page shows (`docs/SPEC_map.md` §6). Decide too whether CI installs numpy, so `tests/test_layout.py` runs there instead of skipping.
+- [ ] **Build the page and the GitHub Pages deploy.** Plan agreed with the owner 2026-11-20. The data file is done (`site/data/orgs.json`, `src/build_site_data.py`; DECISIONS 2026-11-20). Left: the page in `site/` (similarity map coloured by about 5 category groups, search, filters, a card with neighbours and a CRA link, the 128 undescribed orgs in search and a list only, descriptions rendered as text, never HTML), `scripts/build_site.py` stamping asset and data URLs (`docs/WEB_CACHE_BUSTING.md`), and `.github/workflows/pages.yml`. Check the category groups against the CRA codes PDF and the CRA page link format before using them. The owner sets Settings → Pages → Source to GitHub Actions.
 
 ### Housekeeping
 
