@@ -58,6 +58,7 @@ below are from the 2026-11-14 run; the manifest is the record.
   - The general-information header `5030  ` has two trailing spaces.
   - Category, sub-category and designation codes are decoded by `config/cra_codes.json`, taken from the Codes Lists PDF (v1.0, 2021-05-26). Sub-category codes repeat across categories, so the key is `<category>-<sub-category>`. The PDF lists no sub-categories for category `0155` (Upholding Human Rights), which `ident.csv` uses for 53 charities (`docs/DATA_ISSUES.md`).
   - The weburl key column is `BN/NE`, not `BN`.
+  - Programs, on our 2,430 charities (checked 2026-11-20): each has at most one `OP` row for the period the org table picked, and none has an `OP` row only for another period. 128 have no `OP` description (97 Edmonton, 31 ring). 35 share one identical description, word for word, and a few more come in pairs or threes. `src/layout.py` flags these as `no_description` and `shared_description`.
 
 ### Alberta Non-Profit Listing (`data/raw/alberta_nonprofit_listing/`)
 - **Publisher / URL:** Government of Alberta, Corporate Registry, https://open.alberta.ca/opendata/alberta-non-profit-listing (Open Government Licence – Alberta)

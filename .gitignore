@@ -17,6 +17,8 @@ data/raw/*
 !data/raw/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+# Committed so the Pages build needs no model (src/layout.py).
+!data/processed/layout.csv
 output/*
 !output/.gitkeep
 

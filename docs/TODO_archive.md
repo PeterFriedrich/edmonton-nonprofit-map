@@ -8,6 +8,8 @@ Items are verbatim as they were closed, newest-moved first in the order they app
 
 ---
 
+- [x] **Embed descriptions, lay them out in 2D, compute nearest neighbours.** Plan first (new module): model, layout method, how orgs with no description appear. Check `df -h /` before installing a model. DONE 2026-11-20: `src/embed_programs.py`, `src/layout.py`, `data/processed/layout.csv`; reasoning in `docs/SPEC_map.md` §4.
+
 - [x] **Build the org table.** Edmonton and ring filter, decoded category and sub-category, `area` and municipality, revenue band and paid staff (confirm the T3010 line numbers against CRA's data dictionary first). Unmatched or missing records are flagged, not dropped. Done when a test asserts the row count against the raw file and that every row has `area`.
 
 - [x] **Guard: no director or officer name in any output.** Owed with the first output file; the 2026-11-14 decision row then cites it in place of `[unverifiable]`.

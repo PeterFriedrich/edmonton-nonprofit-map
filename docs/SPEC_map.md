@@ -63,6 +63,19 @@ secondary view.
 CRA's own categories are not enough on their own: 27 category codes appear in
 Edmonton and one holds 580 of the 1,866 orgs.
 
+**Placement** (settled 2026-11-20). The text is the ongoing-program (`OP`)
+description alone, without the name, which would group orgs by words like
+"church" or "society". It is embedded by `BAAI/bge-small-en-v1.5`, run locally
+through `fastembed` (`src/embed_programs.py`). UMAP with cosine distance and a
+fixed seed lays it out in 2D, and each org's ten nearest neighbours are found
+by cosine similarity on the full vectors (`src/layout.py`). An org with no
+description is listed, searchable and flagged, but not placed, because a
+position would claim a similarity with no evidence behind it. Short and
+word-for-word shared descriptions are flagged. `data/processed/layout.csv` is
+committed, so the Pages build needs no model. Rejected: an embeddings API
+(billed), t-SNE (loses the large-scale structure), PCA (blurs the clusters),
+and placing undescribed orgs by sub-category.
+
 ## 5. Pro bono filters
 
 Size filters from the T3010 financial files (revenue band, paid staff), so a
@@ -86,7 +99,4 @@ JavaScript page reads it, and GitHub Actions deploys to GitHub Pages. At about
 
 ## 8. Open questions
 
-- The embedding model and the 2D layout method.
 - Whether the 2024 list omits charities that had not filed when it was built.
-- How the 97 Edmonton charities with no ongoing-program description appear.
-  They must not be dropped silently: listed and flagged at the least.
