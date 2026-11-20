@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-pytest.importorskip("numpy")
+np = pytest.importorskip("numpy")
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -118,6 +118,32 @@ def test_placed_without_a_description_stops_the_build():
         bsd.build([_org("A")], [_lay("A")], {}, {}, set())
     with pytest.raises(ValueError, match="placed without a description"):
         bsd.build([_org("A")], [_lay("A", placed=False)], {"A": "x"}, {}, set())
+
+
+def test_a_lone_described_org_left_unplaced_by_layout_is_accepted():
+    lay = [_lay("A", placed=False, flags="no_other_description")]
+    out = bsd.build([_org("A")], lay, {"A": "x"}, {}, set())[0]
+    assert (out["x"], out["description"]) == (None, "x")
+
+
+def _index(*bns):
+    return [{"bn": b} for b in bns]
+
+
+def test_layout_from_these_embeddings_passes():
+    vectors = np.array([[1.0, 0.0], [0.9, 0.1], [0.0, 1.0]])
+    lay = [_lay("A", nbrs="B:0.994;C:0.000"), _lay("B", nbrs="A:0.994;C:0.110"),
+           _lay("C", nbrs="B:0.110;A:0.000")]
+    bsd.check_layout_current(_index("A", "B", "C"), vectors, lay)
+
+
+def test_layout_from_older_embeddings_stops_the_build():
+    # C's vector moved next to A after the layout was written.
+    vectors = np.array([[1.0, 0.0], [0.0, 1.0], [0.95, 0.05]])
+    lay = [_lay("A", nbrs="B:0.994;C:0.000"), _lay("B", nbrs="A:0.994;C:0.110"),
+           _lay("C", nbrs="B:0.110;A:0.000")]
+    with pytest.raises(ValueError, match="stale against the embeddings"):
+        bsd.check_layout_current(_index("A", "B", "C"), vectors, lay)
 
 
 def test_output_is_byte_identical_on_the_same_inputs(tmp_path):

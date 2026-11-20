@@ -19,6 +19,8 @@ import re
 import sys
 from pathlib import Path
 
+import numpy as np
+
 import embed_programs
 import layout
 
@@ -74,6 +76,25 @@ def websites(rows: list[dict], bns: set[str]) -> tuple[dict[str, str], set[str]]
     return urls, unusable
 
 
+def check_layout_current(index: list[dict], vectors: np.ndarray, layout_rows: list[dict]) -> None:
+    """Stop when layout.csv was not computed from these embeddings.
+
+    Its neighbours are recomputed from the vectors and compared; positions
+    can't be recomputed cheaply, but layout.py writes both from one run.
+    """
+    if len(index) != len(vectors):
+        raise ValueError(f"index rows={len(index)} but vectors={len(vectors)}")
+    have = {r["bn"]: [n.split(":")[0] for n in r["neighbours"].split(";") if n] for r in layout_rows}
+    want = {r["bn"]: [] for r in index}
+    if len(index) > 1:
+        idx, _ = layout.nearest(vectors, layout.NEIGHBOURS)
+        want = {r["bn"]: [index[j]["bn"] for j in idx[i]] for i, r in enumerate(index)}
+    stale = sorted(bn for bn in want if have.get(bn) != want[bn])
+    if stale:
+        raise ValueError(f"layout.csv is stale against the embeddings ({len(stale)} orgs, "
+                         f"e.g. {stale[:3]}): rerun src/layout.py")
+
+
 def _same(name: str) -> str:
     return " ".join(name.upper().split())
 
@@ -87,7 +108,9 @@ def build(orgs: list[dict], layout_rows: list[dict], text: dict[str, str],
     placed = {r["bn"]: r for r in layout_rows}
     if placed.keys() != {o["bn"] for o in orgs} or len(layout_rows) != len(orgs):
         raise ValueError("layout.csv and orgs.csv hold different charities: rerun src/layout.py")
-    mismatch = sorted(bn for bn, r in placed.items() if (r["placed"] == "yes") != (bn in text))
+    # A lone described org is left unplaced by layout.py (`no_other_description`).
+    mismatch = sorted(bn for bn, r in placed.items() if (r["placed"] == "yes") != (bn in text)
+                      and "no_other_description" not in r["flags"])
     if mismatch:
         raise ValueError(f"{len(mismatch)} orgs placed without a description or the reverse, "
                          f"e.g. {mismatch[:3]}: rerun src/layout.py")
@@ -147,12 +170,15 @@ def main() -> int:
 
     orgs = embed_programs.read_csv(args.processed / "orgs.csv")
     text = embed_programs.descriptions(orgs, embed_programs.read_csv(args.raw / "programs.csv"))
-    # The shown text must be the text the position was computed from.
-    layout.check_current(embed_programs.read_csv(args.processed / "embeddings_index.csv"),
-                         text, args.model)
+    # The shown text must be the text the position was computed from: the
+    # embeddings must match the text, and the layout the embeddings.
+    index = embed_programs.read_csv(args.processed / "embeddings_index.csv")
+    layout.check_current(index, text, args.model)
+    layout_rows = embed_programs.read_csv(args.processed / "layout.csv")
+    check_layout_current(index, np.load(args.processed / "embeddings.npy"), layout_rows)
     urls, unusable = websites(embed_programs.read_csv(args.raw / "weburl.csv"),
                               {o["bn"] for o in orgs})
-    rows = build(orgs, embed_programs.read_csv(args.processed / "layout.csv"), text, urls, unusable)
+    rows = build(orgs, layout_rows, text, urls, unusable)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))["cra_charities_2024"]
     source = {"cra_dataset_id": manifest["dataset_id"], "cra_retrieved_utc": manifest["retrieved_utc"]}
     write(rows, source, args.out)
