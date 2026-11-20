@@ -91,11 +91,24 @@ no band, and the org carries a flag saying why (`src/build_orgs.py`; line detail
 No director's or officer's name is written to any output. The CRA files
 publish them, but the map is about organizations.
 
+The rule is about fields: no output column or field carries a person's name.
+Free text a charity wrote itself is shown as CRA publishes it, so a program
+description may name someone (on the 2024 file, a title-and-name search finds
+a researcher whose method a program uses and a reverend). CRA's website field
+also holds names and email addresses in place of a web address; only values
+that parse as a web address are shown (`src/build_site_data.py`). Checked
+2026-11-20.
+
 ## 7. Stack
 
 Static only. A Python pipeline in `src/` writes one JSON file, a plain
 JavaScript page reads it, and GitHub Actions deploys to GitHub Pages. At about
 2,300 orgs the file is small enough that no tiles or map library are needed.
+
+The JSON is `site/data/orgs.json`, built locally by `src/build_site_data.py`
+after `src/layout.py` and committed, so CI needs no raw data and no model. It
+holds every org-table row; an unplaced org has no position. It is about 2.5 MB
+(about 0.7 MB compressed), most of it descriptions and neighbour lists.
 
 ## 8. Open questions
 

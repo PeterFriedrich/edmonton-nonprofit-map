@@ -1,6 +1,6 @@
 """Rules of src/embed_programs.py and src/layout.py on tiny inputs.
 
-They need numpy, which the merge gate does not install, so they skip in CI.
+They need numpy, which the merge gate installs (since 2026-11-20); they skip where it is absent.
 No model is loaded: the embedder and the 2D projection are stubbed.
 """
 
