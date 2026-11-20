@@ -128,3 +128,41 @@ def test_build_output_matches_the_columns():
     rows = lo.build([_org("A"), _org("B")], _index(["A", "B"]), np.eye(2), k=1,
                     project_fn=_stub_project)
     assert all(list(r) == lo.COLUMNS for r in rows)
+
+
+def test_stale_embeddings_stop_the_layout():
+    index = _index(["A"], hashes=[ep.sha("old text")])
+    lo.check_current(_index(["A"], hashes=[ep.sha("same")]), {"A": "same"}, "m")
+    with pytest.raises(ValueError):
+        lo.check_current(index, {"A": "new text"}, "m")
+    with pytest.raises(ValueError):  # an org gained a description but has no vector
+        lo.check_current(_index(["A"], hashes=[ep.sha("same")]), {"A": "same", "B": "x"}, "m")
+    with pytest.raises(ValueError):
+        lo.check_current(_index(["A"], hashes=[ep.sha("same")]), {"A": "same"}, "other")
+
+
+def test_zero_vector_stops_the_build():
+    with pytest.raises(ValueError):
+        lo.nearest(np.array([[1.0, 0], [0, 0]]), 1)
+
+
+def test_flat_axis_is_centred_not_nan(monkeypatch):
+    class FakeUMAP:
+        def __init__(self, **kw):
+            pass
+
+        def fit_transform(self, v):
+            return np.array([[0.0, 5.0], [2.0, 5.0]])
+    monkeypatch.setitem(sys.modules, "umap", type(sys)("umap"))
+    sys.modules["umap"].UMAP = FakeUMAP
+    assert lo.project(np.eye(2), 0).tolist() == [[0.0, 0.5], [1.0, 0.5]]
+
+
+def test_category_share_with_nothing_placed_is_nan():
+    share, base = lo.same_category_share([{"bn": "A", "neighbours": ""}], [_org("A")])
+    assert share != share and base != base
+
+
+def test_description_only_for_another_period_is_logged(caplog):
+    ep.descriptions([_org("A")], [_prog("A", "old", fpe="2023-12-31")])
+    assert "another period: 1" in caplog.text

@@ -22,6 +22,8 @@ from pathlib import Path
 
 import numpy as np
 
+import embed_programs
+
 ROOT = Path(__file__).resolve().parent.parent
 PROCESSED = ROOT / "data" / "processed"
 
@@ -41,7 +43,10 @@ def read_csv(path: Path) -> list[dict]:
 
 def nearest(vectors: np.ndarray, k: int) -> tuple[np.ndarray, np.ndarray]:
     """Indices and cosine similarities of each row's k nearest other rows."""
-    unit = vectors / np.linalg.norm(vectors, axis=1, keepdims=True)
+    norm = np.linalg.norm(vectors, axis=1, keepdims=True)
+    if not np.all(np.isfinite(norm) & (norm > 0)):
+        raise ValueError("a vector is zero or not finite")
+    unit = vectors / norm
     sim = unit @ unit.T
     np.fill_diagonal(sim, -np.inf)
     k = min(k, len(vectors) - 1)
@@ -57,7 +62,19 @@ def project(vectors: np.ndarray, seed: int) -> np.ndarray:
     xy = umap.UMAP(n_neighbors=15, min_dist=0.1, metric="cosine",
                    random_state=seed).fit_transform(vectors)
     xy = xy - xy.min(axis=0)
-    return xy / xy.max(axis=0)
+    span = xy.max(axis=0)
+    return np.where(span > 0, xy / np.where(span > 0, span, 1), 0.5)
+
+
+def check_current(index: list[dict], text: dict[str, str], model: str) -> None:
+    """Stop when the embeddings no longer match the descriptions they stand for."""
+    have = {r["bn"]: r["text_sha256"] for r in index}
+    want = {bn: embed_programs.sha(t) for bn, t in text.items()}
+    stale = sorted(bn for bn in have.keys() | want.keys() if have.get(bn) != want.get(bn))
+    models = {r["model"] for r in index} - {model}
+    if stale or models:
+        raise ValueError(f"embeddings are stale ({len(stale)} orgs, e.g. {stale[:3]}; "
+                         f"other models {sorted(models)}): rerun src/embed_programs.py")
 
 
 def build(orgs: list[dict], index: list[dict], vectors: np.ndarray,
@@ -101,6 +118,8 @@ def same_category_share(rows: list[dict], orgs: list[dict]) -> tuple[float, floa
     """Share of neighbours in the org's own CRA category, and the random baseline."""
     cat = {o["bn"]: o["category_code"] for o in orgs}
     placed = [r for r in rows if r["neighbours"]]
+    if not placed:
+        return float("nan"), float("nan")
     pairs = [(cat[r["bn"]], cat[n.split(":")[0]]) for r in placed for n in r["neighbours"].split(";")]
     share = sum(a == b for a, b in pairs) / len(pairs)
     counts = Counter(cat[r["bn"]] for r in placed)
@@ -119,6 +138,8 @@ def write(rows: list[dict], path: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--processed", type=Path, default=PROCESSED)
+    parser.add_argument("--programs", type=Path, default=embed_programs.PROGRAMS)
+    parser.add_argument("--model", default=embed_programs.MODEL)
     parser.add_argument("--out", type=Path, default=PROCESSED / "layout.csv")
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args()
@@ -126,6 +147,8 @@ def main() -> int:
 
     orgs = read_csv(args.processed / "orgs.csv")
     index = read_csv(args.processed / "embeddings_index.csv")
+    check_current(index, embed_programs.descriptions(orgs, embed_programs.read_csv(args.programs)),
+                  args.model)
     rows = build(orgs, index, np.load(args.processed / "embeddings.npy"))
     write(rows, args.out)
     share, baseline = same_category_share(rows, orgs)

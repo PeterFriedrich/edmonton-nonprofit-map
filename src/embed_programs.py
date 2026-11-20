@@ -49,6 +49,12 @@ def descriptions(orgs: list[dict], programs: list[dict]) -> dict[str, str]:
         text = " ".join(" ".join(texts).split())
         if text:
             out[bn] = text
+    elsewhere = {p["BN"] for p in programs if p["Program Type"] == "OP" and p["BN"] in period
+                 and p["BN"] not in out and p["Description"].strip()}
+    if elsewhere:
+        # Not used: the org table's period is the one the map describes. Said, not dropped quietly.
+        log.warning("orgs with an OP description only for another period: %d, e.g. %s",
+                    len(elsewhere), sorted(elsewhere)[:3])
     return out
 
 
