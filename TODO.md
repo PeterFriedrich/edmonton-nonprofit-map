@@ -12,7 +12,7 @@ symptom and re-measure the stated cause before acting on it.
 
 ### Build order (`docs/SPEC_map.md`)
 
-- [ ] **Build the page and the GitHub Pages deploy.** The data file merged in PR #11; the page, the stamping build and the deploy are in the PR after it. Open until the first deploy is live and checked on a phone.
+- [ ] **Check the live page on a real phone and desktop browser.** PRs #11 and #12 shipped it to https://peterfriedrich.github.io/edmonton-nonprofit-map/ (2026-11-20). Headless checks passed, but this box has no web fonts, so control wrapping, touch pan/pinch and the Filters fold are unverified on real devices. Close this when the owner has looked; then archive the build item.
 
 ### Housekeeping
 
