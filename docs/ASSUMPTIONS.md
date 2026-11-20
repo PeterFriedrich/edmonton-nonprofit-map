@@ -44,3 +44,4 @@ by header name, and any table with a `Status` column is part of the index.
 
 | ID | Assumption | Status | If wrong (rough size) | Evidence and test |
 |----|------------|--------|-----------------------|-------------------|
+| A1 | A charity's `OP` description says what it does closely enough that description similarity stands for similarity of work. Boilerplate (shared religious-order text, "donations to qualified donees") may place orgs by wording rather than work. | UNVERIFIED | Every placed org's position and neighbours | `docs/SPEC_map.md` §4; spot checks only so far |

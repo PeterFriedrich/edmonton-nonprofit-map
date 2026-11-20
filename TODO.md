@@ -12,8 +12,7 @@ symptom and re-measure the stated cause before acting on it.
 
 ### Build order (`docs/SPEC_map.md`)
 
-- [ ] **Embed descriptions, lay them out in 2D, compute nearest neighbours.** Plan first (new module): model, layout method, how orgs with no description appear. Check `df -h /` before installing a model.
-- [ ] **Build the page and the GitHub Pages deploy.** Plan first (CI change). Read `docs/WEB_CACHE_BUSTING.md` before the build step.
+- [ ] **Build the page and the GitHub Pages deploy.** Plan first (CI change). Read `docs/WEB_CACHE_BUSTING.md` before the build step. Descriptions are free text and may name a person: decide what the page shows (`docs/SPEC_map.md` §6). Decide too whether CI installs numpy, so `tests/test_layout.py` runs there instead of skipping.
 
 ### Housekeeping
 
@@ -30,6 +29,8 @@ symptom and re-measure the stated cause before acting on it.
 ## Done
 
 Closed items moved out of `## Open work` live in **`docs/TODO_archive.md`** — one line each below, reasoning there.
+
+- [x] **Embed descriptions, lay them out in 2D, compute nearest neighbours.** — DONE 2026-11-20 · `docs/TODO_archive.md`
 
 - [x] **Build the org table.** — DONE 2026-11-19 · `docs/TODO_archive.md`
 - [x] **Guard: no director or officer name in any output.** — DONE 2026-11-19 · `docs/TODO_archive.md`
