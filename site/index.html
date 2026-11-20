@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<title>Edmonton Charities Map</title>
+<meta name="description" content="Registered charities in Edmonton and the metro ring, placed near others that describe similar work.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <h1>Edmonton charities, by what they do</h1>
+  <p class="lede">Each dot is a registered charity in Edmonton or the metro ring. Charities sit near others whose program descriptions are similar. Click a dot to see what it does and its ten closest matches. Scroll or pinch to zoom; drag to move.</p>
+</header>
+
+<section class="controls" aria-label="Search and filters">
+  <label class="search">
+    <span class="visually-hidden">Search by name</span>
+    <input id="q" type="search" placeholder="Search by name" autocomplete="off">
+  </label>
+  <details id="filters" class="filters" open>
+  <summary>Filters</summary>
+  <div class="filter-row">
+  <label><span>Area</span>
+    <select id="f-area">
+      <option value="">All</option>
+      <option value="edmonton">Edmonton</option>
+      <option value="metro_ring">Metro ring</option>
+    </select>
+  </label>
+  <label><span>Municipality</span><select id="f-muni"><option value="">All</option></select></label>
+  <label><span>Category</span><select id="f-cat"><option value="">All</option></select></label>
+  <label><span>Revenue</span><select id="f-rev"><option value="">All</option></select></label>
+  <label><span>Paid staff</span>
+    <select id="f-staff">
+      <option value="">Any</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </label>
+  <button id="reset" type="button" class="link-button">Reset</button>
+  </div>
+  </details>
+</section>
+
+<div class="heads" role="group" aria-label="Highlight a group of categories">
+  <span class="heads-label">Highlight:</span>
+  <span id="heads"></span>
+</div>
+
+<main class="layout">
+  <div class="map-wrap">
+    <canvas id="map" aria-label="Map of charities placed by similarity of their program descriptions" role="img"></canvas>
+    <div class="zoom" role="group" aria-label="Zoom">
+      <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+      <button id="zoom-out" type="button" aria-label="Zoom out">&minus;</button>
+      <button id="zoom-fit" type="button" aria-label="Show every dot">All</button>
+    </div>
+    <div id="tip" class="tip" hidden></div>
+    <p class="status"><span id="status">Loading…</span> <span id="outside"></span> <button id="show-all" type="button" class="link-button" hidden>Show all</button></p>
+  </div>
+
+  <aside id="panel" class="panel" aria-live="polite">
+    <div id="results"></div>
+    <article id="card" class="card" hidden></article>
+  </aside>
+</main>
+
+<footer class="foot">
+  <p>Source: Canada Revenue Agency, <a href="https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8">List of charities, 2024 filings</a>, retrieved <span id="retrieved"></span>. Contains information licensed under the <a href="https://open.canada.ca/en/open-government-licence-canada">Open Government Licence – Canada</a>. Descriptions are the charities' own words as CRA publishes them. Positions come from comparing those descriptions, so nearby charities describe similar work; the axes have no meaning.</p>
+</footer>
+
+<script src="app.js" data-orgs="data/orgs.json"></script>
+</body>
+</html>

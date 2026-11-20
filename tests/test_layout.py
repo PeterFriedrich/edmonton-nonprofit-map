@@ -158,6 +158,18 @@ def test_flat_axis_is_centred_not_nan(monkeypatch):
     assert lo.project(np.eye(2), 0).tolist() == [[0.0, 0.5], [1.0, 0.5]]
 
 
+def test_both_axes_share_one_scale_and_the_short_one_is_centred(monkeypatch):
+    class FakeUMAP:
+        def __init__(self, **kw):
+            pass
+
+        def fit_transform(self, v):
+            return np.array([[10.0, 0.0], [14.0, 0.0], [10.0, 2.0]])
+    monkeypatch.setitem(sys.modules, "umap", type(sys)("umap"))
+    sys.modules["umap"].UMAP = FakeUMAP
+    assert lo.project(np.eye(3), 0).tolist() == [[0.0, 0.25], [1.0, 0.25], [0.0, 0.75]]
+
+
 def test_category_share_with_nothing_placed_is_nan():
     share, base = lo.same_category_share([{"bn": "A", "neighbours": ""}], [_org("A")])
     assert share != share and base != base

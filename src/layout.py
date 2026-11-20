@@ -56,14 +56,20 @@ def nearest(vectors: np.ndarray, k: int) -> tuple[np.ndarray, np.ndarray]:
 
 
 def project(vectors: np.ndarray, seed: int) -> np.ndarray:
-    """2D coordinates scaled to [0, 1]."""
+    """2D coordinates in [0, 1], both axes scaled by one factor so UMAP's proportions are kept.
+
+    The shorter axis is centred. Scaling each axis on its own stretched the
+    picture: one far group of near-identical texts made the rest a thin strip.
+    """
     import umap  # slow to import (numba); only needed here
 
     xy = umap.UMAP(n_neighbors=15, min_dist=0.1, metric="cosine",
                    random_state=seed).fit_transform(vectors)
     xy = xy - xy.min(axis=0)
     span = xy.max(axis=0)
-    return np.where(span > 0, xy / np.where(span > 0, span, 1), 0.5)
+    if span.max() == 0:
+        return np.full_like(xy, 0.5)
+    return xy / span.max() + (1 - span / span.max()) / 2
 
 
 def check_current(index: list[dict], text: dict[str, str], model: str) -> None:

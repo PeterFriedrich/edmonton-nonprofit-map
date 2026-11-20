@@ -24,6 +24,7 @@ A map of registered charities in Edmonton and its metro ring, placed by similari
 - `session-summary/` — session handoff notes. Read the latest before starting work; older ones live in `session-summary/archive/` (don't bulk-read them).
 - `data/raw_manifest.json` — the committed record of each raw file: URL, retrieval time, bytes, checksum, rows. Raw files are not in git; **in a fresh clone run `python src/download_cra.py` and `python src/download_alberta.py`** before anything that reads `data/raw/`.
 - `docs/SPEC_map.md` — the v1 scope: universe, boundary, main view, what is left out, open questions. **Read before proposing a feature or a new data source.**
+- `site/` — the published page (plain HTML, CSS and JS) and its data file. **After `src/layout.py`, run `python src/build_site_data.py`**; `python scripts/build_site.py` builds `_site/` as Pages serves it (`docs/WEB_CACHE_BUSTING.md`).
 - <`docs/ARCHITECTURE.md`, `docs/RUNBOOK.md` … add as they are written, one line each, with WHEN to read it>
 
 ## Token Efficiency
