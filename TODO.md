@@ -17,8 +17,6 @@ symptom and re-measure the stated cause before acting on it.
 ### Housekeeping
 
 - [ ] **Decide whether to tell CRA's open-data team** that the CSV downloads and the datastore API hold different versions of the 2024 list. The evidence is in `docs/DATA_ISSUES.md`, status NOT SENT.
-- [ ] **Replace `README.md`**, which is still the template's own README, with this project's.
-
 ### Later
 
 - [ ] **Registry-only tier:** the Alberta listing's active non-profits that are not CRA charities, as name-only entries. Needs name matching between the two sources.
@@ -29,6 +27,8 @@ symptom and re-measure the stated cause before acting on it.
 ## Done
 
 Closed items moved out of `## Open work` live in **`docs/TODO_archive.md`** — one line each below, reasoning there.
+
+- [x] **Replace `README.md`** · `docs/TODO_archive.md`
 
 - [x] **Embed descriptions, lay them out in 2D, compute nearest neighbours.** — DONE 2026-11-20 · `docs/TODO_archive.md`
 
