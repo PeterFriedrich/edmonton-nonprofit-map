@@ -76,3 +76,9 @@ and contains information licensed under the Open Government Licence – Canada.
 The [Alberta Non-Profit Listing](https://open.alberta.ca/opendata/alberta-non-profit-listing)
 (Open Government Licence – Alberta) is downloaded for a planned later tier.
 Sources, columns and known quirks are in [`data/DATA.md`](data/DATA.md).
+
+## Licence
+
+The code is under the [MIT License](LICENSE). The MIT License does not cover the
+source data or the charity information derived from it, including
+`site/data/orgs.json`, which stay under the government licences named above.
