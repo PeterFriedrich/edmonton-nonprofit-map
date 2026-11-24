@@ -19,6 +19,9 @@
     ["1m_5m", "$1M–5M"], ["5m_plus", "$5M and over"],
   ];
   const REVENUE_LABEL = Object.fromEntries(REVENUE);
+  // Gift totals per pair, banded by src/build_gifts.py.
+  const GIFT_BAND = { under_1k: "under $1k", "1k_10k": "$1k–10k", "10k_100k": "$10k–100k", "100k_plus": "$100k and over" };
+  const GIFTS_SHOWN = 10;
   const FLAG_TEXT = {
     revenue_not_reported: "Revenue not reported on the T3010.",
     revenue_negative: "Reported a negative total revenue, so it has no revenue band.",
@@ -37,6 +40,7 @@
     sub_category_not_decoded: "Its CRA sub-category code is not in CRA's code list.",
     designation_not_decoded: "Its CRA designation code is not in CRA's code list.",
     no_other_description: "It is the only charity with a description, so it has no position.",
+    gift_donee_bn_malformed: "Some of its reported gifts name a recipient with no valid business number, so they are not linked here.",
   };
   const CRA_PAGE = "https://apps.cra-arc.gc.ca/ebci/hacc/srch/pub/chrtydtls/";
   const PAGE_SIZE = 100;
@@ -171,6 +175,16 @@
     ctx.lineWidth = 1; ctx.strokeStyle = colors.surface; ctx.beginPath(); on.forEach(dot); ctx.stroke();
 
     const sel = state.selected && byBn.get(state.selected);
+    if (sel) {
+      // Squares mark the charities it gave to or received gifts from.
+      ctx.strokeStyle = colors.ring; ctx.lineWidth = 1.5; ctx.beginPath();
+      const s = r + 3;
+      for (const [bn] of sel.gives_to.concat(sel.receives_from)) {
+        const n = byBn.get(bn); if (!n || n.x === null) continue;
+        const [nx, ny] = toScreen(n.x, n.y); ctx.rect(nx - s, ny - s, 2 * s, 2 * s);
+      }
+      ctx.stroke();
+    }
     if (sel && sel.x !== null) {
       const [sx, sy] = toScreen(sel.x, sel.y);
       ctx.strokeStyle = colors.muted; ctx.lineWidth = 1; ctx.beginPath();
@@ -306,7 +320,7 @@
       const unplaced = orgs.filter((o) => o.x === null).length;
       results.append(
         el("h2", null, `${fmt.format(orgs.length)} registered charities`),
-        el("p", null, `${fmt.format(placed.length)} are on the map. Dots close together describe similar work; the lines from a selected dot go to its ten most similar charities.`),
+        el("p", null, `${fmt.format(placed.length)} are on the map. Dots close together describe similar work; the lines from a selected dot go to its ten most similar charities, and squares mark the charities it gave gifts to or received them from.`),
         el("p", null, "Search by name, filter by area, size or category, or highlight one of CRA's four groups of charitable purposes."),
         el("p", null, el("button", { type: "button", className: "link-button", onclick: () => { state.list = "unplaced"; state.shown = PAGE_SIZE; renderList(); } },
           `${fmt.format(unplaced)} charities with no description, not on the map`)));
@@ -332,6 +346,16 @@
     if (o.staff_full_time !== null) parts.push(`${fmt.format(o.staff_full_time)} full-time`);
     if (o.staff_part_time !== null) parts.push(`${fmt.format(o.staff_part_time)} part-time`);
     return parts.length ? `Paid staff: ${parts.join(", ")}` : "Has paid staff (numbers not reported)";
+  }
+  function giftSection(title, pairs) {
+    if (!pairs.length) return null;
+    const ul = el("ul", { className: "list" });
+    const fill = (n) => { clear(ul); add(ul, pairs.slice(0, n).map(([bn, b]) => orgButton(byBn.get(bn), GIFT_BAND[b] || "amount not given"))); };
+    fill(GIFTS_SHOWN);
+    const more = pairs.length > GIFTS_SHOWN
+      ? el("button", { type: "button", className: "link-button", onclick: (e) => { fill(pairs.length); e.currentTarget.remove(); } }, `Show all ${fmt.format(pairs.length)}`)
+      : null;
+    return [el("h3", null, `${title} (${fmt.format(pairs.length)})`), ul, more];
   }
   function renderCard(o) {
     results.hidden = true; card.hidden = false; clear(card);
@@ -359,6 +383,13 @@
     if (o.neighbours.length) {
       add(card, el("h3", null, "Most similar descriptions"),
         el("ul", { className: "list" }, o.neighbours.map(([bn, s]) => orgButton(byBn.get(bn), `similarity ${s.toFixed(2)}`))));
+    }
+    if (o.gives_to.length || o.receives_from.length || o.gives_outside) {
+      add(card,
+        giftSection("Gave to charities on this map", o.gives_to),
+        giftSection("Received gifts from charities on this map", o.receives_from),
+        o.gives_outside ? el("p", { className: "note" }, `Also gave to ${fmt.format(o.gives_outside)} ${o.gives_outside === 1 ? "recipient" : "recipients"} not linked on this map.`) : null,
+        el("p", { className: "note" }, "Gifts to other registered charities and qualified donees, as reported on the 2024 T3010, largest first; amounts are each pair's total for the year."));
     }
     // no_description is said in the card's description section already.
     const notes = o.flags.filter((f) => f !== "no_description").map((f) => FLAG_TEXT[f] || f);

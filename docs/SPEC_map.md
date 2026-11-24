@@ -95,6 +95,20 @@ committed, so the Pages build needs no model. Rejected: an embeddings API
 (billed), t-SNE (loses the large-scale structure), PCA (blurs the clusters),
 and placing undescribed orgs by sub-category.
 
+**Gifts** (settled 2026-11-24). A second, reported way charities relate: the
+gifts each one listed to other qualified donees on its T3010 (CRA's qualified
+donees file), for the period the org table picked. A gift links two charities
+only when the donee's business number is exactly one on the map; names are
+never matched, because a near-miss number is not proof (`src/build_gifts.py`).
+Each card lists the charities it gave to and received from, largest first, the
+first ten and then all on request, with each pair's yearly total in four bands
+(under $1k, $1k–10k, $10k–100k, $100k and over), and counts the recipients it
+gave to that are not linked. On the map, squares mark the selected charity's
+gift partners. A giver with a blank or malformed donee number is flagged.
+Rejected: lines between every giver and donee on the map (two foundations
+give to 416 and 308 map charities, so the picture would be one tangle), exact
+dollar amounts, and listing recipients off the map by name.
+
 ## 5. Pro bono filters
 
 Size filters from the T3010 financial files (revenue band, paid staff), so a

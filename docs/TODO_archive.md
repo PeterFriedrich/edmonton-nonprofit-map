@@ -8,6 +8,8 @@ Items are verbatim as they were closed, newest-moved first in the order they app
 
 ---
 
+- [x] **Funding links between orgs** from the CRA qualified-donees file, as a second way orgs relate.
+
 - [x] **Replace `README.md`**, which is still the template's own README, with this project's.
 
 

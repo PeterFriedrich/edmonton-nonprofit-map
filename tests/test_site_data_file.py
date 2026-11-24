@@ -22,8 +22,10 @@ ALLOWED_FIELDS = [
     "bn", "name", "legal_name", "designation", "municipality", "area",
     "category_code", "category", "sub_category", "fpe",
     "revenue_band", "has_paid_staff", "staff_full_time", "staff_part_time",
-    "x", "y", "neighbours", "description", "website", "flags",
+    "x", "y", "neighbours", "description", "website",
+    "gives_to", "receives_from", "gives_outside", "flags",
 ]
+GIFT_BANDS = {"under_1k", "1k_10k", "10k_100k", "100k_plus", None}
 PERSON_WORDS = re.compile(r"director|officer|trustee|first|last|initial|position|person", re.I)
 KNOWN_FLAGS = {
     # src/build_orgs.py
@@ -34,7 +36,7 @@ KNOWN_FLAGS = {
     # src/layout.py
     "no_description", "short_description", "shared_description", "no_other_description",
     # src/build_site_data.py
-    "website_unusable",
+    "website_unusable", "gift_donee_bn_malformed",
 }
 # What the page may turn into a link: a scheme, a dotted host, a path with no
 # space and no "@" (CRA's website field also holds names and email addresses).
@@ -105,3 +107,22 @@ def test_websites_are_web_links_only(orgs):
 
 def test_only_flags_we_know(orgs):
     assert set().union(*(o["flags"] for o in orgs)) <= KNOWN_FLAGS
+
+
+def test_gift_links_join_charities_on_the_map_both_ways(orgs):
+    bns = {o["bn"] for o in orgs}
+    gives = {(o["bn"], d, b) for o in orgs for d, b in o["gives_to"]}
+    receives = {(g, o["bn"], b) for o in orgs for g, b in o["receives_from"]}
+    assert gives and gives == receives
+    assert sum(len(o["gives_to"]) for o in orgs) == len(gives), "a pair is listed twice"
+    for giver, donee, band in gives:
+        assert giver in bns and donee in bns and giver != donee, (giver, donee)
+        assert band in GIFT_BANDS, (giver, donee, band)
+
+
+def test_gives_outside_is_a_count(orgs):
+    assert all(isinstance(o["gives_outside"], int) and o["gives_outside"] >= 0 for o in orgs)
+    # A malformed donee number is never linked, so it is counted outside.
+    for o in orgs:
+        if "gift_donee_bn_malformed" in o["flags"]:
+            assert o["gives_outside"] > 0, o["bn"]

@@ -170,3 +170,10 @@ def test_committed_manifest_covers_every_file(module):
     for name, entry in files.items():
         assert entry["bytes"] > 0 and entry["rows"] > 0, name
         assert re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]), name
+
+
+def test_qualified_donees_pattern_leaves_out_the_non_qualified_file():
+    package = {"resources": [{"url": f"https://x/{n}"} for n in
+                             ("non_qualified_donees_2024_updated.csv", "qualified_donees_2024_updated.csv")]}
+    hit = cd.select_resource(package, download_cra.FILES["qualified_donees.csv"].pattern)
+    assert hit["url"].endswith("/qualified_donees_2024_updated.csv")
