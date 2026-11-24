@@ -2,19 +2,20 @@
 
     python src/build_gifts.py
 
-Reads data/processed/orgs.csv and data/raw/cra_charities_2024/qualified_donees.csv;
-writes data/processed/gifts.csv (giver_bn, donee_bn, total, band) for inspection.
-src/build_site_data.py calls `gifts()` itself, so the page never reads a stale copy.
+Reads data/processed/orgs.csv and data/raw/cra_charities_2024/qualified_donees.csv
+and logs what it would link. It writes nothing: src/build_site_data.py calls
+`gifts()` itself, so the page never reads a stale copy.
 
 A gift counts only for the giver's period in the org table, and links two
 charities only when the donee's business number is exactly one on the map.
 Names are never matched: a near-miss number is not proof. Every other row is
-counted, by reason, in the log; the giver's card says how many donees it gave
-to off the map, and a malformed donee number flags the giver.
+counted, by reason, in the log; the giver's card says how many of its gift
+lines went to recipients not linked, and a malformed donee number flags it.
+A line's amount is `Total Gifts`, which includes gifts in kind; when it is
+blank, `Gifts in Kind` stands in.
 """
 
 import argparse
-import csv
 import logging
 import math
 import re
@@ -40,28 +41,29 @@ log = logging.getLogger(__name__)
 @dataclass
 class Gifts:
     links: list[dict]  # giver, donee, total (None if no amount was given), band
-    outside: Counter = field(default_factory=Counter)  # giver -> distinct donees not linked
+    outside: Counter = field(default_factory=Counter)  # giver -> gift lines not linked
     malformed: Counter = field(default_factory=Counter)  # giver -> rows with a malformed donee BN
     stats: Counter = field(default_factory=Counter)  # rows by what happened to them
 
 
 def band(total: float | None) -> str | None:
-    if total is None or total <= 0:
+    if total is None or total < 0:
         return None
     return next(name for limit, name in BANDS if total < limit)
 
 
-def _amount(value: str) -> float | None:
-    try:
-        return float(value)
-    except ValueError:
-        return None
+def _amount(row: dict) -> float | None:
+    for column in ("Total Gifts", "Gifts in Kind"):
+        try:
+            return float(row[column])
+        except ValueError:
+            continue
+    return None
 
 
 def gifts(rows: list[dict], periods: dict[str, str]) -> Gifts:
     """`periods` maps each map charity's BN to the fiscal period the org table picked."""
     totals: dict[tuple[str, str], list[float]] = defaultdict(list)
-    outside: dict[str, set[str]] = defaultdict(set)
     out = Gifts(links=[])
     for r in rows:
         giver = r["BN"]
@@ -71,20 +73,19 @@ def gifts(rows: list[dict], periods: dict[str, str]) -> Gifts:
         if r["FPE"] != periods[giver]:
             out.stats["other_period"] += 1
             continue
-        donee = r["Donee BN"].strip()
+        donee = r["Donee BN"].strip().upper()  # a few are filed with a lower-case "rr"
         if not BN.match(donee):
             out.stats["donee_bn_malformed"] += 1
             out.malformed[giver] += 1
-            # Keyed by name only to count distinct donees; never used to link.
-            outside[giver].add("name:" + " ".join(r["Donee Name"].upper().split()))
+            out.outside[giver] += 1
         elif donee == giver:
             out.stats["self"] += 1
         elif donee not in periods:
             out.stats["donee_not_on_map"] += 1
-            outside[giver].add(donee)
+            out.outside[giver] += 1
         else:
             out.stats["linked"] += 1
-            amount = _amount(r["Total Gifts"])
+            amount = _amount(r)
             if amount is None:
                 out.stats["linked_no_amount"] += 1
             totals[(giver, donee)].append(amount)
@@ -93,7 +94,6 @@ def gifts(rows: list[dict], periods: dict[str, str]) -> Gifts:
         total = sum(given) if given else None
         out.links.append({"giver": giver, "donee": donee, "total": total, "band": band(total)})
     out.links.sort(key=lambda g: (g["giver"], -(g["total"] or 0), g["donee"]))
-    out.outside = Counter({g: len(d) for g, d in outside.items()})
     return out
 
 
@@ -113,12 +113,7 @@ def main() -> int:
 
     orgs = embed_programs.read_csv(args.processed / "orgs.csv")
     result = gifts(embed_programs.read_csv(args.raw), {o["bn"]: o["fpe"] for o in orgs})
-    path = args.processed / "gifts.csv"
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["giver", "donee", "total", "band"])
-        w.writeheader()
-        w.writerows(result.links)
-    log.info("wrote %s out=%s", summary(result), path)
+    log.info("gifts %s", summary(result))
     return 0
 
 

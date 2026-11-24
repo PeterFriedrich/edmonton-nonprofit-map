@@ -17,8 +17,9 @@ OFF = "999999999RR0001"
 PERIODS = {A: "2024-12-31", B: "2024-03-31", C: "2024-12-31"}
 
 
-def _row(giver, donee, total="100", fpe="2024-12-31", name="Some Donee"):
-    return {"BN": giver, "FPE": fpe, "Donee BN": donee, "Donee Name": name, "Total Gifts": total}
+def _row(giver, donee, total="100", fpe="2024-12-31", name="Some Donee", in_kind=""):
+    return {"BN": giver, "FPE": fpe, "Donee BN": donee, "Donee Name": name,
+            "Total Gifts": total, "Gifts in Kind": in_kind}
 
 
 def _links(result):
@@ -26,7 +27,7 @@ def _links(result):
 
 
 @pytest.mark.parametrize("total, band", [
-    (None, None), (0, None), (-5, None), (1, "under_1k"), (999.99, "under_1k"),
+    (None, None), (-5, None), (0, "under_1k"), (1, "under_1k"), (999.99, "under_1k"),
     (1000, "1k_10k"), (9999, "1k_10k"), (10000, "10k_100k"), (100000, "100k_plus"),
 ])
 def test_band_edges(total, band):
@@ -47,7 +48,7 @@ def test_only_the_givers_period_counts():
 def test_a_donee_off_the_map_is_counted_not_linked():
     result = bg.gifts([_row(A, OFF), _row(A, OFF, "5"), _row(A, "888888888RR0001")], PERIODS)
     assert result.links == []
-    assert result.outside[A] == 2
+    assert result.outside[A] == 3  # gift lines, not distinct donees
     assert result.stats["donee_not_on_map"] == 3
 
 
@@ -58,7 +59,7 @@ def test_a_malformed_donee_number_is_never_matched_by_name():
     result = bg.gifts(rows, PERIODS)
     assert result.links == []
     assert result.malformed[A] == 3
-    assert result.outside[A] == 1  # one name, so one donee
+    assert result.outside[A] == 3
     assert result.stats["donee_bn_malformed"] == 3
 
 
@@ -76,6 +77,17 @@ def test_a_link_with_no_amount_has_no_band():
     result = bg.gifts([_row(A, B, ""), _row(A, C, "x"), _row(A, C, "50")], PERIODS)
     assert _links(result) == [(A, C, 50.0, "under_1k"), (A, B, None, None)]
     assert result.stats["linked_no_amount"] == 2
+
+
+def test_gifts_in_kind_stand_in_for_a_blank_total_only():
+    # CRA's total includes gifts in kind, so it wins when both are given.
+    rows = [_row(A, B, "", in_kind="20000"), _row(A, C, "500", in_kind="400")]
+    assert _links(bg.gifts(rows, PERIODS)) == [(A, B, 20000.0, "10k_100k"), (A, C, 500.0, "under_1k")]
+
+
+def test_a_lower_case_rr_still_links():
+    result = bg.gifts([_row(A, B.lower())], PERIODS)
+    assert _links(result) == [(A, B, 100.0, "under_1k")] and result.malformed[A] == 0
 
 
 def test_every_row_is_accounted_for():

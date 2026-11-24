@@ -119,9 +119,9 @@ def build(orgs: list[dict], layout_rows: list[dict], text: dict[str, str],
     if mismatch:
         raise ValueError(f"{len(mismatch)} orgs placed without a description or the reverse, "
                          f"e.g. {mismatch[:3]}: rerun src/layout.py")
-    # Largest gift first: build_gifts sorts the links that way.
+    # Largest gift first, on both cards; ties by business number.
     gives, receives = defaultdict(list), defaultdict(list)
-    for g in gifts.links:
+    for g in sorted(gifts.links, key=lambda g: (-(g["total"] or 0), g["giver"], g["donee"])):
         gives[g["giver"]].append([g["donee"], g["band"]])
         receives[g["donee"]].append([g["giver"], g["band"]])
     out = []

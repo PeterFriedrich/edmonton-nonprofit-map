@@ -166,3 +166,14 @@ def test_gifts_appear_on_both_cards_and_a_malformed_donee_flags_the_giver():
     assert (a["gives_to"], a["receives_from"], a["gives_outside"]) == ([["B", "under_1k"]], [], 2)
     assert (b["gives_to"], b["receives_from"], b["gives_outside"]) == ([], [["A", "under_1k"]], 0)
     assert "gift_donee_bn_malformed" in a["flags"] and "gift_donee_bn_malformed" not in b["flags"]
+
+
+def test_both_gift_lists_put_the_largest_gift_first():
+    gifts = Gifts(links=[{"giver": "A", "donee": "C", "total": 50.0, "band": "under_1k"},
+                         {"giver": "B", "donee": "C", "total": 500000.0, "band": "100k_plus"},
+                         {"giver": "C", "donee": "A", "total": 5.0, "band": "under_1k"},
+                         {"giver": "C", "donee": "B", "total": 5000.0, "band": "1k_10k"}])
+    orgs = [_org(b) for b in "ABC"]
+    c = bsd.build(orgs, [_lay(b) for b in "ABC"], {b: b for b in "ABC"}, {}, set(), gifts)[2]
+    assert [bn for bn, _ in c["receives_from"]] == ["B", "A"]
+    assert [bn for bn, _ in c["gives_to"]] == ["B", "A"]
