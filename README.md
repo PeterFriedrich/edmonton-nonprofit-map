@@ -15,8 +15,9 @@ so they say where the mail goes rather than where the work happens.
 - Search by name and filter by area, municipality, category, revenue band and
   paid staff.
 - Highlight one of CRA's four heads of charity at a time.
-- Open a charity's card for its description, website, CRA page and ten most
-  similar charities.
+- Open a charity's card for its description, website, CRA page, ten most
+  similar charities, and the charities on the map it gave gifts to or received
+  them from.
 
 ## How it is made
 
@@ -25,7 +26,9 @@ so they say where the mail goes rather than where the work happens.
    `BAAI/bge-small-en-v1.5`, run locally.
 3. Lay the charities out in 2D with UMAP, and find each one's ten nearest
    neighbours on the full vectors.
-4. Join everything into one JSON file, which a plain HTML, CSS and JavaScript
+4. Link charities that reported gifts to each other, from CRA's qualified
+   donees file, by exact business number.
+5. Join everything into one JSON file, which a plain HTML, CSS and JavaScript
    page reads. GitHub Actions deploys it to GitHub Pages.
 
 The full scope and the reasons behind it are in

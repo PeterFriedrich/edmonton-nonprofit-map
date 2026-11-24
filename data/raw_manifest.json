@@ -64,6 +64,14 @@
         "sha256": "c551a70a0290a1de50cbc16923e43472d7e5c64a3c3178b2992265c71d0cdcec",
         "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/1f16eb1b-cc03-4c95-a81c-0fdc0722c5ee/download/new_ongoing_programs_2024_updated.csv"
       },
+      "qualified_donees.csv": {
+        "bytes": 39161568,
+        "publisher_last_modified": "2026-11-13T20:42:42.206707",
+        "resource_id": "8195b2cb-ce2d-4cd2-b829-6d07f4959f49",
+        "rows": 344932,
+        "sha256": "274366a03bea88b30f4f4dfe058ab2f1314533865012117aa4329cc01cc88803",
+        "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/8195b2cb-ce2d-4cd2-b829-6d07f4959f49/download/qualified_donees_2024_updated.csv"
+      },
       "weburl.csv": {
         "bytes": 1710410,
         "publisher_last_modified": "2026-11-13T21:17:06.913120",
@@ -73,6 +81,6 @@
         "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/e3567bb5-5d98-44d0-b0e8-9cdd3732c9e4/download/weburl_2024_updated.csv"
       }
     },
-    "retrieved_utc": "2026-11-14T06:59:53Z"
+    "retrieved_utc": "2026-11-24T07:04:01Z"
   }
 }

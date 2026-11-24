@@ -16,17 +16,19 @@ symptom and re-measure the stated cause before acting on it.
 
 ### Housekeeping
 
-- [ ] **Decide whether to tell CRA's open-data team** that the CSV downloads and the datastore API hold different versions of the 2024 list. The evidence is in `docs/DATA_ISSUES.md`, status NOT SENT.
+- [ ] **Decide whether to tell CRA's open-data team** that the CSV downloads and the datastore API hold different versions of the 2024 list, and that many donee business numbers in the qualified-donees file are blank, malformed or mistyped. The evidence is in `docs/DATA_ISSUES.md`, both NOT SENT.
+
 ### Later
 
 - [ ] **Registry-only tier:** the Alberta listing's active non-profits that are not CRA charities, as name-only entries. Needs name matching between the two sources.
-- [ ] **Funding links between orgs** from the CRA qualified-donees file, as a second way orgs relate.
 - [ ] **Geographic view** as a secondary view.
 - [ ] **Other directories** (211 Alberta, InformAlberta, ECVO): no open licence was found on 2026-11-14. Using one needs the publisher's permission first.
 
 ## Done
 
 Closed items moved out of `## Open work` live in **`docs/TODO_archive.md`** — one line each below, reasoning there.
+
+- [x] **Funding links between orgs** · `docs/TODO_archive.md`
 
 - [x] **Replace `README.md`** · `docs/TODO_archive.md`
 

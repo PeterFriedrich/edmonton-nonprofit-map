@@ -3,13 +3,15 @@
     python src/build_site_data.py
 
 Reads data/processed/orgs.csv, data/processed/layout.csv, the embeddings index,
-and data/raw/cra_charities_2024/ (programs, weburl, and the manifest entry);
+and data/raw/cra_charities_2024/ (programs, weburl, qualified donees, and the
+manifest entry);
 writes site/data/orgs.json, which is committed so the Pages build needs no
 raw data. Run it after src/layout.py.
 
 Every org-table row is written; nothing is dropped. A website value that is
 not a web address (CRA's field also holds people's names and email
-addresses) is left out and flagged `website_unusable`.
+addresses) is left out and flagged `website_unusable`. Gifts between the
+map's charities come from src/build_gifts.py.
 """
 
 import argparse
@@ -17,10 +19,12 @@ import json
 import logging
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
 
+import build_gifts
 import embed_programs
 import layout
 
@@ -37,7 +41,8 @@ FIELDS = [
     "bn", "name", "legal_name", "designation", "municipality", "area",
     "category_code", "category", "sub_category", "fpe",
     "revenue_band", "has_paid_staff", "staff_full_time", "staff_part_time",
-    "x", "y", "neighbours", "description", "website", "flags",
+    "x", "y", "neighbours", "description", "website",
+    "gives_to", "receives_from", "gives_outside", "flags",
 ]
 
 _LABEL = r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
@@ -104,7 +109,7 @@ def _int(value: str) -> int | None:
 
 
 def build(orgs: list[dict], layout_rows: list[dict], text: dict[str, str],
-          urls: dict[str, str], unusable: set[str]) -> list[dict]:
+          urls: dict[str, str], unusable: set[str], gifts: build_gifts.Gifts) -> list[dict]:
     placed = {r["bn"]: r for r in layout_rows}
     if placed.keys() != {o["bn"] for o in orgs} or len(layout_rows) != len(orgs):
         raise ValueError("layout.csv and orgs.csv hold different charities: rerun src/layout.py")
@@ -114,6 +119,11 @@ def build(orgs: list[dict], layout_rows: list[dict], text: dict[str, str],
     if mismatch:
         raise ValueError(f"{len(mismatch)} orgs placed without a description or the reverse, "
                          f"e.g. {mismatch[:3]}: rerun src/layout.py")
+    # Largest gift first, on both cards; ties by business number.
+    gives, receives = defaultdict(list), defaultdict(list)
+    for g in sorted(gifts.links, key=lambda g: (-(g["total"] or 0), g["giver"], g["donee"])):
+        gives[g["giver"]].append([g["donee"], g["band"]])
+        receives[g["donee"]].append([g["giver"], g["band"]])
     out = []
     for o in orgs:
         lay = placed[o["bn"]]
@@ -122,6 +132,8 @@ def build(orgs: list[dict], layout_rows: list[dict], text: dict[str, str],
         flags = [f for f in o["flags"].split(";") + lay["flags"].split(";") if f]
         if o["bn"] in unusable:
             flags.append("website_unusable")
+        if gifts.malformed[o["bn"]]:
+            flags.append("gift_donee_bn_malformed")
         out.append({
             "bn": o["bn"],
             "name": name,
@@ -144,6 +156,9 @@ def build(orgs: list[dict], layout_rows: list[dict], text: dict[str, str],
                            (n.split(":") for n in lay["neighbours"].split(";") if n)],
             "description": text.get(o["bn"]),
             "website": urls.get(o["bn"]),
+            "gives_to": gives[o["bn"]],
+            "receives_from": receives[o["bn"]],
+            "gives_outside": gifts.outside[o["bn"]],
             "flags": flags,
         })
     return out
@@ -178,13 +193,16 @@ def main() -> int:
     check_layout_current(index, np.load(args.processed / "embeddings.npy"), layout_rows)
     urls, unusable = websites(embed_programs.read_csv(args.raw / "weburl.csv"),
                               {o["bn"] for o in orgs})
-    rows = build(orgs, layout_rows, text, urls, unusable)
+    gifts = build_gifts.gifts(embed_programs.read_csv(args.raw / "qualified_donees.csv"),
+                              {o["bn"]: o["fpe"] for o in orgs})
+    rows = build(orgs, layout_rows, text, urls, unusable, gifts)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))["cra_charities_2024"]
     source = {"cra_dataset_id": manifest["dataset_id"], "cra_retrieved_utc": manifest["retrieved_utc"]}
     write(rows, source, args.out)
     log.info("wrote orgs=%d placed=%d with_description=%d websites=%d website_unusable=%d out=%s",
              len(rows), sum(r["x"] is not None for r in rows), len(text), len(urls),
              len(unusable), args.out)
+    log.info("gifts %s gift_donee_bn_malformed_orgs=%d", build_gifts.summary(gifts), len(gifts.malformed))
     return 0
 
 

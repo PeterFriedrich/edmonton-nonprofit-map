@@ -58,6 +58,9 @@ FILES = {
     "financial.csv": FileSpec(r"^financial_d_and_schedule_6_\d{4}", csv_check(["BN", "FPE"])),
     "compensation.csv": FileSpec(r"^schedule_3_compensation_\d{4}", csv_check(["BN", "FPE"])),
     "weburl.csv": FileSpec(r"^weburl_\d{4}", csv_check(["BN/NE", "Contact URL"])),
+    # Anchored so it can't match non_qualified_donees_<year>.
+    "qualified_donees.csv": FileSpec(r"^qualified_donees_\d{4}",
+                                     csv_check(["BN", "FPE", "Donee BN", "Total Gifts"])),
 }
 
 if __name__ == "__main__":
