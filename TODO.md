@@ -16,7 +16,8 @@ symptom and re-measure the stated cause before acting on it.
 
 ### Housekeeping
 
-- [ ] **Decide whether to tell CRA's open-data team** that the CSV downloads and the datastore API hold different versions of the 2024 list, and that many donee business numbers in the qualified-donees file are blank, malformed or mistyped. The evidence is in `docs/DATA_ISSUES.md`, both NOT SENT.
+- [ ] **Decide whether to tell CRA's open-data team** about the three CRA rows in `docs/DATA_ISSUES.md` (CSV vs API, donee business numbers, the 0155 sub-codes). A draft is in `/home/opc/research/edmonton-nonprofit-map/`; all NOT SENT. Before sending, add the on-map typo class found in the 2026-11-26 audit to the draft (`docs/FINDINGS_gift_links.md` L2).
+- [ ] **Decide the fix for gift links that name the wrong charity** (2026-11-26 audit, L2 CONDITIONAL): caption only, withhold a link on a name mismatch, or a hand-kept exception list. Options and recommendation in `docs/FINDINGS_gift_links.md`; premise A2 in `docs/ASSUMPTIONS.md`.
 
 ### Later
 
