@@ -16,6 +16,7 @@ top-down, fundamental decisions first.
 
 | Date | Target / scope | Instrument | Output | Verdict (one line) | Outstanding |
 |------|----------------|------------|--------|--------------------|-------------|
+| 2026-11-26 | Gift links (`src/build_gifts.py`, their use in `src/build_site_data.py`, card text) | `project-audit` decision audit, L0–L4 | `docs/FINDINGS_gift_links.md` | L0, L1, L3 SOUND; L4 PASS; L2 CONDITIONAL: some well-formed donee numbers on the map are typos, so a few links name the wrong charity | Owner picks an L2 fix option; A2 in `docs/ASSUMPTIONS.md` |
 
 ## Queued — briefed, not yet run
 

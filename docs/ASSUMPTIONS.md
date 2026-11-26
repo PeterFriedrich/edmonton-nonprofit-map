@@ -45,3 +45,4 @@ by header name, and any table with a `Status` column is part of the index.
 | ID | Assumption | Status | If wrong (rough size) | Evidence and test |
 |----|------------|--------|-----------------------|-------------------|
 | A1 | A charity's `OP` description says what it does closely enough that description similarity stands for similarity of work. Boilerplate (shared religious-order text, "donations to qualified donees") may place orgs by wording rather than work. | UNVERIFIED | Every placed org's position and neighbours | `docs/SPEC_map.md` §4; spot checks only so far |
+| A2 | A well-formed donee business number that belongs to a map charity names the charity the giver meant, so a gift link is real. | UNVERIFIED | A fraction of a percent of linked gift lines; each one shows a false link on two cards | `docs/FINDINGS_gift_links.md` L2 (hand read, not a guard) |
