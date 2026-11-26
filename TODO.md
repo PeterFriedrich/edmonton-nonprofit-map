@@ -10,9 +10,10 @@ symptom and re-measure the stated cause before acting on it.
 
 ## Open work
 
-### Build order (`docs/SPEC_map.md`)
+### Waiting on the owner
 
-- [ ] **Check the live page on a real phone and desktop browser.** PRs #11 and #12 shipped it to https://peterfriedrich.github.io/edmonton-nonprofit-map/ (2026-11-20). Headless checks passed, but this box has no web fonts, so control wrapping, touch pan/pinch and the Filters fold are unverified on real devices. Close this when the owner has looked; then archive the build item.
+- [ ] **Owner runs:** `Press Sync in the claude.ai Project for data/DATA.md and docs/SPEC_map.md` — PRs #18 and #20 changed them, and the web side can't tell it is stale · confirm: `the owner says both paths are synced; no check from this box can see the Project` · low, before the next Claude web chat · since 2026-11-24
+- [ ] **Owner runs:** `Open https://peterfriedrich.github.io/edmonton-nonprofit-map/ on a real phone and a desktop browser; try the Filters fold, pan/pinch, and the gift sections on #122437072RR0001` — this box has no web fonts or touch, so headless checks (PRs #11, #12, #18) can't show wrapping or gestures · confirm: `the owner reports what they saw; close this item and archive it` · low · since 2026-11-20
 
 ### Housekeeping
 
