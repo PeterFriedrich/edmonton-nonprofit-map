@@ -17,8 +17,7 @@ symptom and re-measure the stated cause before acting on it.
 
 ### Housekeeping
 
-- [ ] **Decide whether to tell CRA's open-data team** about the three CRA rows in `docs/DATA_ISSUES.md` (CSV vs API, donee business numbers, the 0155 sub-codes). A draft is in `/home/opc/research/edmonton-nonprofit-map/`; all NOT SENT. Before sending, add the on-map typo class found in the 2026-11-26 audit to the draft (`docs/FINDINGS_gift_links.md` L2).
-- [ ] **Decide the fix for gift links that name the wrong charity** (2026-11-26 audit, L2 CONDITIONAL): caption only, withhold a link on a name mismatch, or a hand-kept exception list. Options and recommendation in `docs/FINDINGS_gift_links.md`; premise A2 in `docs/ASSUMPTIONS.md`.
+- [ ] **Decide whether to tell CRA's open-data team** about the three CRA rows in `docs/DATA_ISSUES.md` (CSV vs API, donee business numbers, the 0155 sub-codes). A draft is in `/home/opc/research/edmonton-nonprofit-map/`; all NOT SENT. The draft includes the on-map typo class found in the 2026-11-26 audit (`docs/FINDINGS_gift_links.md` L2).
 
 ### Later
 
@@ -29,6 +28,8 @@ symptom and re-measure the stated cause before acting on it.
 ## Done
 
 Closed items moved out of `## Open work` live in **`docs/TODO_archive.md`** — one line each below, reasoning there.
+
+- [x] **Decide the fix for gift links that name the wrong charity** — DONE 2026-11-27 · `docs/TODO_archive.md`
 
 - [x] **Funding links between orgs** · `docs/TODO_archive.md`
 
