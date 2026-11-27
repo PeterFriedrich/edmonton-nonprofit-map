@@ -389,7 +389,7 @@
         giftSection("Gave to charities on this map", o.gives_to),
         giftSection("Received gifts from charities on this map", o.receives_from),
         o.gives_outside ? el("p", { className: "note" }, `It reported ${fmt.format(o.gives_outside)} more ${o.gives_outside === 1 ? "gift" : "gifts"} to recipients not linked on this map.`) : null,
-        el("p", { className: "note" }, "Gifts to other registered charities and qualified donees, as reported on the 2024 T3010, largest first; amounts are each pair's total for the year."));
+        el("p", { className: "note" }, "Gifts to other registered charities and qualified donees, as reported on the 2024 T3010, largest first; amounts are each pair's total for the year. Links follow the business number on the return, so a mistyped number can name the wrong charity."));
     }
     // no_description is said in the card's description section already.
     const notes = o.flags.filter((f) => f !== "no_description").map((f) => FLAG_TEXT[f] || f);

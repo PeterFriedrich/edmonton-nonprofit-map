@@ -8,6 +8,9 @@ Items are verbatim as they were closed, newest-moved first in the order they app
 
 ---
 
+- [x] **Decide the fix for gift links that name the wrong charity** — DONE 2026-11-27: caption on the card plus a local guard on the size (`docs/DECISIONS.md`) (2026-11-26 audit, L2 CONDITIONAL): caption only, withhold a link on a name mismatch, or a hand-kept exception list. Options and recommendation in `docs/FINDINGS_gift_links.md`; premise A2 in `docs/ASSUMPTIONS.md`.
+
+
 - [x] **Funding links between orgs** from the CRA qualified-donees file, as a second way orgs relate.
 
 - [x] **Replace `README.md`**, which is still the template's own README, with this project's.

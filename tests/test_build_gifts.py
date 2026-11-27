@@ -93,3 +93,42 @@ def test_a_lower_case_rr_still_links():
 def test_every_row_is_accounted_for():
     rows = [_row(A, B), _row(A, A), _row(A, OFF), _row(A, ""), _row(OFF, A), _row(A, B, fpe="2020-01-01")]
     assert sum(v for k, v in bg.gifts(rows, PERIODS).stats.items() if k != "linked_no_amount") == len(rows)
+
+
+# --- the 2024 files: links whose filed name looks like another charity ---------------
+
+PROCESSED_ORGS = ROOT / "data" / "processed" / "orgs.csv"
+RAW_GIFTS = ROOT / "data" / "raw" / "cra_charities_2024" / "qualified_donees.csv"
+# Words too common in charity names to show two names refer to the same charity.
+COMMON = {"THE", "OF", "FOR", "AND", "DE", "LA", "DU", "SOCIETY", "ASSOCIATION", "ASSN",
+          "FOUNDATION", "INC", "LTD", "EDMONTON", "ALBERTA", "AB", "CANADA", "CENTRE",
+          "CENTER", "CHURCH", "FUND"}
+
+
+def _words(name):
+    import re
+    return set(re.sub(r"[^A-Z0-9 ]", " ", name.upper()).split()) - COMMON
+
+
+@pytest.mark.skipif(not (PROCESSED_ORGS.exists() and RAW_GIFTS.exists()),
+                    reason="data/raw/ not downloaded or orgs.csv not built")
+def test_linked_lines_whose_filed_name_shares_no_word_stay_near_the_audited_count():
+    # A well-formed donee number on the map can still be a typo for another charity
+    # (docs/FINDINGS_gift_links.md L2: 140 such lines on 2026-11-26, about 12-25 of
+    # them truly a different charity). The card says so; this keeps the size honest.
+    # Out of range: re-read the lines by hand and update the findings before the bounds.
+    import embed_programs
+    orgs = embed_programs.read_csv(PROCESSED_ORGS)
+    periods = {o["bn"]: o["fpe"] for o in orgs}
+    names = {o["bn"]: _words(o["legal_name"]) | _words(o["account_name"]) for o in orgs}
+    rows = embed_programs.read_csv(RAW_GIFTS)
+    result = bg.gifts(rows, periods)
+    no_shared = 0
+    for r in rows:
+        donee = r["Donee BN"].strip().upper()
+        if (r["BN"] in periods and r["FPE"] == periods[r["BN"]] and bg.BN.match(donee)
+                and donee in periods and donee != r["BN"]
+                and not _words(r["Donee Name"]) & names[donee]):
+            no_shared += 1
+    assert result.stats["linked"] == 2768, "the linked set moved: re-run the audit's L2 read"
+    assert 100 <= no_shared <= 200, f"{no_shared} linked lines share no name word"
